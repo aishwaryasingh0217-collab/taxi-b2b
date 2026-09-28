@@ -4,7 +4,8 @@ import {
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
   ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
   LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User,
-  ArrowLeft, Check, Radio, Navigation, Camera, Layers, Sparkles, DollarSign, Settings
+  ArrowLeft, Check, Radio, Navigation, Camera, Layers, Sparkles, DollarSign, Settings,
+  UploadCloud, Trash2, Image as ImageIcon
 } from 'lucide-react';
 
 const AVAILABLE_FEATURES = [
@@ -76,6 +77,12 @@ const VehicleManagement = () => {
   // Multi-angle photo gallery index (. . . pagination)
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
+  // File Upload & Gallery state (Unlimited Photos + Drag & Drop)
+  const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const [primaryPhotoIndex, setPrimaryPhotoIndex] = useState(0);
+
   // Initial Form State for Add Vehicle
   const initialFormState = {
     registration_number: '',
@@ -91,10 +98,6 @@ const VehicleManagement = () => {
     current_odometer: 0,
     shift_rate_inr: 2500,
     extra_km_rate_inr: 15,
-    photo_front: '',
-    photo_side: '',
-    photo_rear: '',
-    photo_interior: '',
     features: [
       'GPS Telemetry & Live Tracker',
       'Automated FASTag Toll Pass',
@@ -144,14 +147,57 @@ const VehicleManagement = () => {
     }
   };
 
+  // Drag & Drop / Device Gallery File Upload Handlers
+  const handleFiles = (files) => {
+    const fileArray = Array.from(files);
+    const readers = fileArray.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(readers).then(newBase64Photos => {
+      setUploadedPhotos(prev => [...prev, ...newBase64Photos]);
+    });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemovePhoto = (indexToRemove) => {
+    setUploadedPhotos(prev => prev.filter((_, idx) => idx !== indexToRemove));
+    if (primaryPhotoIndex >= indexToRemove && primaryPhotoIndex > 0) {
+      setPrimaryPhotoIndex(prev => prev - 1);
+    }
+  };
+
   const handleApplyPhotoPreset = () => {
     const pack = PRESET_PHOTO_PACKS[formData.vehicle_class] || PRESET_PHOTO_PACKS.SEDAN;
+    const presetList = [pack.photo_front, pack.photo_side, pack.photo_rear, pack.photo_interior];
+    setUploadedPhotos(presetList);
+    setPrimaryPhotoIndex(0);
     setFormData(prev => ({
       ...prev,
-      photo_front: pack.photo_front,
-      photo_side: pack.photo_side,
-      photo_rear: pack.photo_rear,
-      photo_interior: pack.photo_interior,
       shift_rate_inr: pack.rate,
       extra_km_rate_inr: pack.km_rate
     }));
@@ -171,14 +217,9 @@ const VehicleManagement = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
 
-    const gallery = [
-      formData.photo_front,
-      formData.photo_side,
-      formData.photo_rear,
-      formData.photo_interior
-    ].filter(Boolean);
-
-    const mainImage = formData.photo_front || (gallery.length > 0 ? gallery[0] : 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800');
+    const mainImage = uploadedPhotos.length > 0
+      ? (uploadedPhotos[primaryPhotoIndex] || uploadedPhotos[0])
+      : 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800';
 
     const payload = {
       registration_number: formData.registration_number,
@@ -195,7 +236,7 @@ const VehicleManagement = () => {
       shift_rate_inr: Number(formData.shift_rate_inr),
       extra_km_rate_inr: Number(formData.extra_km_rate_inr),
       image_url: mainImage,
-      gallery_images: gallery.length > 0 ? gallery : [mainImage],
+      gallery_images: uploadedPhotos.length > 0 ? uploadedPhotos : [mainImage],
       features: formData.features,
       notes: formData.notes
     };
@@ -205,6 +246,8 @@ const VehicleManagement = () => {
       setShowAddModal(false);
       fetchVehicles();
       setFormData(initialFormState);
+      setUploadedPhotos([]);
+      setPrimaryPhotoIndex(0);
     } catch (err) {
       alert('Error saving vehicle: ' + JSON.stringify(err.response?.data || err.message));
     }
@@ -1219,13 +1262,18 @@ const VehicleManagement = () => {
                 </div>
               </div>
 
-              {/* SECTION 2: MULTI-ANGLE CAR PHOTOS GALLERY */}
+              {/* SECTION 2: UNLIMITED DRAG & DROP / GALLERY FILE UPLOAD */}
               <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Camera size={16} />
-                    <span>2. Multi-Angle Vehicle Photos (4 Angle URLs)</span>
-                  </h4>
+                  <div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Camera size={16} />
+                      <span>2. Vehicle Photo Gallery (Drag & Drop or Gallery Files - No Photo Limit)</span>
+                    </h4>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Upload as many photos as you want from your phone or PC gallery (Front, Side, Rear, Interior, Dashboard, Trunk).
+                    </p>
+                  </div>
 
                   <button
                     type="button"
@@ -1234,7 +1282,7 @@ const VehicleManagement = () => {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      padding: '4px 10px',
+                      padding: '6px 12px',
                       background: 'rgba(56, 189, 248, 0.15)',
                       border: '1px solid rgba(56, 189, 248, 0.3)',
                       color: '#38bdf8',
@@ -1245,55 +1293,170 @@ const VehicleManagement = () => {
                     }}
                   >
                     <Sparkles size={14} />
-                    <span>Fill High-Res Photo Pack</span>
+                    <span>Load Sample High-Res Pack</span>
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Front View Image URL (Main) *</label>
-                    <input
-                      type="url"
-                      className="input-field"
-                      placeholder="https://images.unsplash.com/photo-front..."
-                      value={formData.photo_front}
-                      onChange={(e) => setFormData({ ...formData, photo_front: e.target.value })}
-                    />
-                  </div>
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleFiles(e.target.files);
+                    }
+                  }}
+                />
 
-                  <div>
-                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Side Profile View URL</label>
-                    <input
-                      type="url"
-                      className="input-field"
-                      placeholder="https://images.unsplash.com/photo-side..."
-                      value={formData.photo_side}
-                      onChange={(e) => setFormData({ ...formData, photo_side: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Rear View URL</label>
-                    <input
-                      type="url"
-                      className="input-field"
-                      placeholder="https://images.unsplash.com/photo-rear..."
-                      value={formData.photo_rear}
-                      onChange={(e) => setFormData({ ...formData, photo_rear: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Interior Cabin View URL</label>
-                    <input
-                      type="url"
-                      className="input-field"
-                      placeholder="https://images.unsplash.com/photo-interior..."
-                      value={formData.photo_interior}
-                      onChange={(e) => setFormData({ ...formData, photo_interior: e.target.value })}
-                    />
-                  </div>
+                {/* Drag & Drop Dropzone Box */}
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    padding: '24px',
+                    borderRadius: '10px',
+                    border: isDragging ? '2px dashed #38bdf8' : '2px dashed rgba(255, 255, 255, 0.15)',
+                    background: isDragging ? 'rgba(56, 189, 248, 0.1)' : '#1e293b',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    marginBottom: uploadedPhotos.length > 0 ? '16px' : '0'
+                  }}
+                >
+                  <UploadCloud size={36} color="#38bdf8" style={{ margin: '0 auto 8px auto' }} />
+                  <h5 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
+                    Drag & Drop Car Photos Here, or <span style={{ color: '#38bdf8', textDecoration: 'underline' }}>Browse Gallery Files</span>
+                  </h5>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    Select multiple photos at once. Unlimited uploads supported (JPG, PNG, WEBP, HEIC).
+                  </p>
                 </div>
+
+                {/* Uploaded Gallery Grid */}
+                {uploadedPhotos.length > 0 && (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>
+                        ✓ {uploadedPhotos.length} Photo{uploadedPhotos.length > 1 ? 's' : ''} Uploaded to Gallery
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
+                        Click star ⭐ on any photo to set as Primary Showcase Thumbnail
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                      {uploadedPhotos.map((photoUrl, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            position: 'relative',
+                            height: '110px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            border: primaryPhotoIndex === idx ? '2px solid #34d399' : '1px solid var(--border-color)',
+                            background: '#000'
+                          }}
+                        >
+                          <img src={photoUrl} alt={`Uploaded ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+                          {/* Primary Star Badge Button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPrimaryPhotoIndex(idx);
+                            }}
+                            title={primaryPhotoIndex === idx ? 'Primary Main Thumbnail' : 'Set as Primary Thumbnail'}
+                            style={{
+                              position: 'absolute',
+                              top: '6px',
+                              left: '6px',
+                              background: primaryPhotoIndex === idx ? 'rgba(52, 211, 153, 0.9)' : 'rgba(0,0,0,0.6)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '3px 6px',
+                              fontSize: '0.65rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Star size={11} fill={primaryPhotoIndex === idx ? '#fff' : 'none'} />
+                            <span>{primaryPhotoIndex === idx ? 'Primary' : 'Set Main'}</span>
+                          </button>
+
+                          {/* Trash / Delete Photo Button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemovePhoto(idx);
+                            }}
+                            title="Remove Photo"
+                            style={{
+                              position: 'absolute',
+                              top: '6px',
+                              right: '6px',
+                              background: 'rgba(239, 68, 68, 0.85)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '24px',
+                              height: '24px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justify: 'center',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+
+                          <div style={{
+                            position: 'absolute',
+                            bottom: 0, left: 0, right: 0,
+                            background: 'rgba(0,0,0,0.7)',
+                            fontSize: '0.62rem',
+                            color: '#fff',
+                            padding: '2px 6px',
+                            textAlign: 'center'
+                          }}>
+                            Photo #{idx + 1}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add More Photos Card */}
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        style={{
+                          height: '110px',
+                          borderRadius: '8px',
+                          border: '2px dashed rgba(255, 255, 255, 0.2)',
+                          background: 'rgba(255,255,255,0.03)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justify: 'center',
+                          cursor: 'pointer',
+                          color: 'var(--text-muted)',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <Plus size={22} color="#38bdf8" />
+                        <span style={{ fontSize: '0.72rem', fontWeight: 600, marginTop: '4px', color: '#38bdf8' }}>Add More</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* SECTION 3: COMMERCIAL TARIFF RATES (INR ₹) */}
