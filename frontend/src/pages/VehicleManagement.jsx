@@ -1262,16 +1262,16 @@ const VehicleManagement = () => {
                 </div>
               </div>
 
-              {/* SECTION 2: UNLIMITED DRAG & DROP / GALLERY FILE UPLOAD */}
+              {/* SECTION 2: VEHICLE PHOTO GALLERY */}
               <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                   <div>
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Camera size={16} />
-                      <span>2. Vehicle Photo Gallery (Drag & Drop or Gallery Files - No Photo Limit)</span>
+                      <span>2. Vehicle Photo Gallery</span>
                     </h4>
                     <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      Upload as many photos as you want from your phone or PC gallery (Front, Side, Rear, Interior, Dashboard, Trunk).
+                      Upload vehicle photos for client showcase & verification.
                     </p>
                   </div>
 
@@ -1325,7 +1325,7 @@ const VehicleManagement = () => {
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    marginBottom: uploadedPhotos.length > 0 ? '16px' : '0'
+                    marginBottom: '14px'
                   }}
                 >
                   <UploadCloud size={36} color="#38bdf8" style={{ margin: '0 auto 8px auto' }} />
@@ -1333,7 +1333,41 @@ const VehicleManagement = () => {
                     Drag & Drop Car Photos Here, or <span style={{ color: '#38bdf8', textDecoration: 'underline' }}>Browse Gallery Files</span>
                   </h5>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    Select multiple photos at once. Unlimited uploads supported (JPG, PNG, WEBP, HEIC).
+                    Select multiple photos from your device (JPG, PNG, WEBP, HEIC).
+                  </p>
+                </div>
+
+                {/* Mandatory & Recommended Photo Checklist Guide */}
+                <div style={{ marginBottom: uploadedPhotos.length > 0 ? '16px' : '0', padding: '12px 14px', background: '#1e293b', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                    <AlertCircle size={14} />
+                    <span>Mandatory Photo Upload Checklist</span>
+                  </span>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', fontSize: '0.73rem', color: '#e2e8f0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <CheckCircle2 size={13} color="#34d399" />
+                      <span><strong>Front View</strong> (Mandatory *)</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <CheckCircle2 size={13} color="#34d399" />
+                      <span><strong>Side Profile</strong> (Mandatory *)</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <CheckCircle2 size={13} color="#34d399" />
+                      <span><strong>Rear View</strong> (Mandatory *)</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <CheckCircle2 size={13} color="#34d399" />
+                      <span><strong>Interior Cabin</strong> (Mandatory *)</span>
+                    </div>
+                  </div>
+
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                    💡 <em>Optional photos recommended: Dashboard, Trunk Space, Engine Bay, Telematics Unit.</em>
                   </p>
                 </div>
 
