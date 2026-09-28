@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, ShieldAlert, X, Image } from 'lucide-react';
+import { 
+  Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
+  ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, Edit3 
+} from 'lucide-react';
 
 const VehicleManagement = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  
+  // Modals State
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
 
-  // Form State
+  // Form State for Add Vehicle
   const [formData, setFormData] = useState({
     registration_number: '',
     vin: '',
@@ -28,7 +34,13 @@ const VehicleManagement = () => {
     setLoading(true);
     try {
       const res = await api.get('fleet/vehicles/');
-      setVehicles(res.data.results || res.data);
+      const data = res.data.results || res.data;
+      setVehicles(data);
+      // Update selected vehicle reference if currently viewing details
+      if (selectedVehicle) {
+        const updated = data.find(v => v.id === selectedVehicle.id);
+        if (updated) setSelectedVehicle(updated);
+      }
     } catch (err) {
       console.error('Failed to fetch vehicles:', err);
     } finally {
@@ -61,6 +73,15 @@ const VehicleManagement = () => {
       });
     } catch (err) {
       alert('Error saving vehicle: ' + JSON.stringify(err.response?.data || err.message));
+    }
+  };
+
+  const handleStatusChange = async (vehicleId, newStatus) => {
+    try {
+      await api.patch(`fleet/vehicles/${vehicleId}/`, { status: newStatus });
+      fetchVehicles();
+    } catch (err) {
+      alert('Error updating status: ' + JSON.stringify(err.response?.data || err.message));
     }
   };
 
@@ -97,7 +118,7 @@ const VehicleManagement = () => {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Vehicle Master Registry</h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Track VIN records, fuel types, odometer readings, vehicle photos, and compliance status.
+            Click on any vehicle row to inspect compliance documents, specs, and status logs.
           </p>
         </div>
 
@@ -153,11 +174,17 @@ const VehicleManagement = () => {
                 <th>Odometer</th>
                 <th>Status</th>
                 <th>Compliance Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredVehicles.map((vehicle) => (
-                <tr key={vehicle.id}>
+                <tr 
+                  key={vehicle.id}
+                  onClick={() => setSelectedVehicle(vehicle)}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to view detailed vehicle specs and compliance vault"
+                >
                   <td style={{ width: '90px' }}>
                     {vehicle.image_url ? (
                       <img
@@ -223,12 +250,207 @@ const VehicleManagement = () => {
                       <span className="badge badge-success"><CheckCircle2 size={12} /> Valid</span>
                     )}
                   </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedVehicle(vehicle);
+                      }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                    >
+                      <Eye size={14} />
+                      <span>Details</span>
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
+
+      {/* DETAILED VEHICLE MODAL / DRAWER */}
+      {selectedVehicle && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.82)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justify: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '0' }}>
+            
+            {/* Modal Header Image Banner */}
+            <div style={{ position: 'relative', height: '220px', background: '#0f172a', overflow: 'hidden' }}>
+              {selectedVehicle.image_url ? (
+                <img
+                  src={selectedVehicle.image_url}
+                  alt={selectedVehicle.registration_number}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+                />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1e293b, #0f172a)' }}>
+                  <Car size={64} color="var(--text-dim)" />
+                </div>
+              )}
+              
+              {/* Overlay Gradient */}
+              <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                background: 'linear-gradient(to top, rgba(15,23,42,1) 0%, rgba(15,23,42,0.4) 60%, rgba(0,0,0,0.6) 100%)'
+              }} />
+
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedVehicle(null)}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  width: '36px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justify: 'center',
+                  cursor: 'pointer',
+                  zIndex: 2
+                }}
+              >
+                <X size={20} />
+              </button>
+
+              {/* Banner Info */}
+              <div style={{ position: 'absolute', bottom: '16px', left: '24px', zIndex: 2 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span className="badge badge-info">{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</span>
+                  <span className="badge badge-warning">{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</span>
+                  {getStatusBadge(selectedVehicle.status)}
+                </div>
+                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: '#fff', marginTop: '6px' }}>
+                  {selectedVehicle.make} {selectedVehicle.model} ({selectedVehicle.year})
+                </h2>
+                <p className="font-mono" style={{ color: '#60a5fa', fontSize: '0.95rem', fontWeight: 600 }}>
+                  Plate: {selectedVehicle.registration_number} &nbsp;|&nbsp; VIN: {selectedVehicle.vin}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Specs Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>ODOMETER</span>
+                  <p className="font-mono" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
+                    {Number(selectedVehicle.current_odometer).toLocaleString()} KM
+                  </p>
+                </div>
+
+                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>SEATING CAPACITY</span>
+                  <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
+                    {selectedVehicle.seating_capacity} Passengers
+                  </p>
+                </div>
+
+                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>STATUS TOGGLE</span>
+                  <select
+                    className="select-field"
+                    style={{ marginTop: '4px', padding: '4px 8px', fontSize: '0.8rem' }}
+                    value={selectedVehicle.status}
+                    onChange={(e) => handleStatusChange(selectedVehicle.id, e.target.value)}
+                  >
+                    <option value="AVAILABLE">Available</option>
+                    <option value="ON_DUTY">On Duty</option>
+                    <option value="IN_MAINTENANCE">In Maintenance</option>
+                    <option value="DECOMMISSIONED">Decommissioned</option>
+                  </select>
+                </div>
+
+                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>ASSIGNED DRIVER</span>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#34d399', marginTop: '6px' }}>
+                    {selectedVehicle.current_driver && selectedVehicle.current_driver.length > 0 
+                      ? selectedVehicle.current_driver[0].user_detail?.username 
+                      : 'Unassigned / Available'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Compliance Vault Documents Section */}
+              <div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldCheck size={18} color="#3b82f6" />
+                  <span>Compliance Vault & Legal Documents</span>
+                </h4>
+
+                {selectedVehicle.compliance_docs && selectedVehicle.compliance_docs.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {selectedVehicle.compliance_docs.map((doc) => (
+                      <div key={doc.id} style={{
+                        padding: '12px 16px',
+                        background: '#0f172a',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-color)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justify: 'space-between'
+                      }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <strong style={{ color: '#fff', fontSize: '0.9rem' }}>{doc.document_type_display || doc.document_type}</strong>
+                            <span className="font-mono" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>({doc.document_number})</span>
+                          </div>
+                          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                            Authority: {doc.issuer_authority || 'DMV / Transport Board'} | Issued: {doc.issue_date}
+                          </p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          {doc.computed_status === 'EXPIRED' ? (
+                            <span className="badge badge-danger">EXPIRED ({doc.expiry_date})</span>
+                          ) : doc.computed_status === 'EXPIRING_SOON' ? (
+                            <span className="badge badge-warning">EXPIRING SOON ({doc.expiry_date})</span>
+                          ) : (
+                            <span className="badge badge-success">VALID (Exp: {doc.expiry_date})</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: '16px', background: '#0f172a', borderRadius: '8px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    No legal documents filed in vault yet.
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '16px 24px', background: '#0f172a', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedVehicle(null)} className="btn-secondary">
+                Close Panel
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Add Vehicle Modal */}
       {showAddModal && (
