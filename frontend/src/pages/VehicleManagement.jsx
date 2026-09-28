@@ -83,6 +83,9 @@ const VehicleManagement = () => {
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [primaryPhotoIndex, setPrimaryPhotoIndex] = useState(0);
 
+  // Legal Compliance Documents State (RC Book, Insurance, PUC, Permit, Fitness)
+  const [complianceDocs, setComplianceDocs] = useState([]);
+
   // Initial Form State for Add Vehicle
   const initialFormState = {
     registration_number: '',
@@ -203,6 +206,65 @@ const VehicleManagement = () => {
     }));
   };
 
+  // Legal Compliance Documents Handlers
+  const handleAddComplianceDocEntry = () => {
+    setComplianceDocs(prev => [
+      ...prev,
+      {
+        document_type: 'RC_BOOK',
+        document_number: '',
+        issue_date: '2025-01-01',
+        expiry_date: '2030-01-01',
+        issuer_authority: 'RTO Panaji, Goa'
+      }
+    ]);
+  };
+
+  const handleUpdateComplianceDoc = (index, field, val) => {
+    setComplianceDocs(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: val };
+      return copy;
+    });
+  };
+
+  const handleRemoveComplianceDoc = (index) => {
+    setComplianceDocs(prev => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleApplyCompliancePreset = () => {
+    setComplianceDocs([
+      {
+        document_type: 'RC_BOOK',
+        document_number: `RC-GA03-${Math.floor(1000 + Math.random() * 9000)}`,
+        issue_date: '2025-01-15',
+        expiry_date: '2035-01-14',
+        issuer_authority: 'RTO Panaji, Goa'
+      },
+      {
+        document_type: 'INSURANCE',
+        document_number: `POL-ICICI-${Math.floor(100000 + Math.random() * 900000)}`,
+        issue_date: '2026-01-01',
+        expiry_date: '2027-12-31',
+        issuer_authority: 'ICICI Lombard Commercial Insurance'
+      },
+      {
+        document_type: 'PUC',
+        document_number: `PUC-GOA-${Math.floor(1000 + Math.random() * 9000)}`,
+        issue_date: '2026-06-01',
+        expiry_date: '2027-05-31',
+        issuer_authority: 'State Pollution Control Board'
+      },
+      {
+        document_type: 'PERMIT',
+        document_number: 'ALL-INDIA-TOURIST-PERMIT-2026',
+        issue_date: '2025-04-01',
+        expiry_date: '2030-03-31',
+        issuer_authority: 'Transport Dept Goa'
+      }
+    ]);
+  };
+
   const handleToggleFeature = (featureName) => {
     setFormData(prev => {
       const exists = prev.features.includes(featureName);
@@ -238,6 +300,7 @@ const VehicleManagement = () => {
       image_url: mainImage,
       gallery_images: uploadedPhotos.length > 0 ? uploadedPhotos : [mainImage],
       features: formData.features,
+      compliance_docs: complianceDocs,
       notes: formData.notes
     };
 
@@ -248,6 +311,7 @@ const VehicleManagement = () => {
       setFormData(initialFormState);
       setUploadedPhotos([]);
       setPrimaryPhotoIndex(0);
+      setComplianceDocs([]);
     } catch (err) {
       alert('Error saving vehicle: ' + JSON.stringify(err.response?.data || err.message));
     }
@@ -1572,11 +1636,157 @@ const VehicleManagement = () => {
                 </div>
               </div>
 
-              {/* SECTION 5: DUTY STATUS & REMARKS */}
+              {/* SECTION 5: LEGAL COMPLIANCE VAULT & PROOF DOCUMENTS (RC BOOK, INSURANCE, PUC, PERMIT) */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#eab308', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <ShieldCheck size={16} />
+                      <span>5. Legal Compliance Vault & Proof Documents (RC Book, Insurance, PUC, Permit)</span>
+                    </h4>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Record Registration Certificate (RC Book), Commercial Insurance, PUC, RTO Fitness & Tourist Permits.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleApplyCompliancePreset}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '6px 12px',
+                      background: 'rgba(234, 179, 8, 0.15)',
+                      border: '1px solid rgba(234, 179, 8, 0.3)',
+                      color: '#facc15',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    <span>Auto-Fill Sample RC & Legal Vault</span>
+                  </button>
+                </div>
+
+                {complianceDocs.length === 0 ? (
+                  <div style={{ padding: '20px', borderRadius: '8px', border: '1px dashed var(--border-color)', background: '#1e293b', textAlign: 'center' }}>
+                    <FileText size={28} color="var(--text-dim)" style={{ margin: '0 auto 6px auto' }} />
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
+                      No legal compliance documents filed yet. Click below or use preset to record RC Book & Insurance.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleAddComplianceDocEntry}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.78rem', padding: '6px 14px' }}
+                    >
+                      <Plus size={14} />
+                      <span>Add First Compliance Document</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {complianceDocs.map((doc, idx) => (
+                      <div key={idx} style={{ padding: '14px', background: '#1e293b', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr 1fr 1.2fr 40px', gap: '10px', alignItems: 'center' }}>
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '3px' }}>Document Type *</label>
+                          <select
+                            className="select-field"
+                            style={{ fontSize: '0.78rem', padding: '6px 8px' }}
+                            value={doc.document_type}
+                            onChange={(e) => handleUpdateComplianceDoc(idx, 'document_type', e.target.value)}
+                          >
+                            <option value="RC_BOOK">Registration Certificate (RC Book)</option>
+                            <option value="INSURANCE">Vehicle Insurance Policy</option>
+                            <option value="PUC">Pollution Under Control (PUC)</option>
+                            <option value="FITNESS">RTO Fitness Certificate</option>
+                            <option value="PERMIT">Commercial Tourist Permit</option>
+                            <option value="TAX_REC">Road Tax Receipt</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '3px' }}>Document No. *</label>
+                          <input
+                            type="text"
+                            className="input-field"
+                            style={{ fontSize: '0.78rem', padding: '6px 8px' }}
+                            placeholder="e.g. RC-GA03AX8899"
+                            value={doc.document_number}
+                            onChange={(e) => handleUpdateComplianceDoc(idx, 'document_number', e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '3px' }}>Issue Date</label>
+                          <input
+                            type="date"
+                            className="input-field"
+                            style={{ fontSize: '0.78rem', padding: '6px 8px' }}
+                            value={doc.issue_date}
+                            onChange={(e) => handleUpdateComplianceDoc(idx, 'issue_date', e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '3px' }}>Expiry Date *</label>
+                          <input
+                            type="date"
+                            className="input-field"
+                            style={{ fontSize: '0.78rem', padding: '6px 8px' }}
+                            value={doc.expiry_date}
+                            onChange={(e) => handleUpdateComplianceDoc(idx, 'expiry_date', e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '3px' }}>Issuer RTO / Authority</label>
+                          <input
+                            type="text"
+                            className="input-field"
+                            style={{ fontSize: '0.78rem', padding: '6px 8px' }}
+                            placeholder="e.g. RTO Panaji / ICICI"
+                            value={doc.issuer_authority}
+                            onChange={(e) => handleUpdateComplianceDoc(idx, 'issuer_authority', e.target.value)}
+                          />
+                        </div>
+
+                        <div style={{ textAlign: 'center', paddingTop: '16px' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveComplianceDoc(idx)}
+                            title="Remove document record"
+                            style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={handleAddComplianceDocEntry}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.78rem', padding: '8px 14px', width: 'fit-content', marginTop: '4px' }}
+                    >
+                      <Plus size={14} />
+                      <span>+ Add Another Legal Document Record</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION 6: DUTY STATUS & REMARKS */}
               <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={16} />
-                  <span>5. Operational Status & Fleet Notes</span>
+                  <span>6. Operational Status & Fleet Notes</span>
                 </h4>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px' }}>

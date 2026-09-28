@@ -47,6 +47,7 @@ class Vehicle(models.Model):
 
 class VehicleCompliance(models.Model):
     class DocType(models.TextChoices):
+        RC_BOOK = 'RC_BOOK', 'Registration Certificate (RC Book)'
         PUC = 'PUC', 'Pollution Under Control Certificate'
         INSURANCE = 'INSURANCE', 'Vehicle Insurance Policy'
         FITNESS = 'FITNESS', 'Fitness Certificate'
