@@ -1,0 +1,12 @@
+{
+  "name": "taxi-b2b-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Taxi B2B Fleet & Driver Operations Platform Root",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "server": "cd backend && .venv/bin/python manage.py runserver 8000"
+  }
+}
