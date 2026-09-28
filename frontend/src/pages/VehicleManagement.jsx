@@ -4,7 +4,7 @@ import {
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
   ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
   LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User,
-  ArrowLeft, Check, Radio, Wifi, Navigation, Shield, Award
+  ArrowLeft, Check, Radio, Navigation, Camera, Layers
 } from 'lucide-react';
 
 const VehicleManagement = () => {
@@ -14,12 +14,11 @@ const VehicleManagement = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' (Showcase) or 'table'
   
-  // Selected vehicle for Full Screen Detail View (like wowgoa.in/bikes?bike=...)
+  // Selected vehicle for Full Screen Detail View
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [activeImageTab, setActiveImageTab] = useState(0);
-
-  // Modals State
-  const [showAddModal, setShowAddModal] = useState(false);
+  
+  // Multi-angle photo gallery index (. . . pagination)
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   // Form State for Add Vehicle
   const [formData, setFormData] = useState({
@@ -35,6 +34,7 @@ const VehicleManagement = () => {
     seating_capacity: 4,
     image_url: ''
   });
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const fetchVehicles = async () => {
     setLoading(true);
@@ -56,6 +56,12 @@ const VehicleManagement = () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
+
+  // Reset photo angle index whenever a new vehicle is opened
+  const handleOpenVehicle = (v) => {
+    setSelectedVehicle(v);
+    setActivePhotoIndex(0);
+  };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
@@ -119,7 +125,7 @@ const VehicleManagement = () => {
   const categoryConfigs = {
     SEDAN: {
       title: 'Executive Sedans',
-      subtitle: 'Premium corporate comfort & airport transfers',
+      subtitle: 'Premium corporate comfort & airport dispatches',
       bgGradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
       icon: Car,
       rate: '$150 / shift'
@@ -133,7 +139,7 @@ const VehicleManagement = () => {
     },
     SUV: {
       title: 'Premium SUVs',
-      subtitle: 'Spacious 6-seater luxury & long distance',
+      subtitle: 'Spacious 6-7 seater luxury & long distance',
       bgGradient: 'linear-gradient(135deg, #d97706, #b45309)',
       icon: Car,
       rate: '$220 / shift'
@@ -161,10 +167,19 @@ const VehicleManagement = () => {
     return acc;
   }, {});
 
-  // FULL SCREEN DETAIL VIEW (like wowgoa.in/bikes?bike=bike-1)
+  // FULL SCREEN DETAIL VIEW WITH MULTI-ANGLE GALLERY & DOTS (. . .)
   if (selectedVehicle) {
     const cat = categoryConfigs[selectedVehicle.vehicle_class] || categoryConfigs.SEDAN;
     const CatIcon = cat.icon;
+
+    // Gallery Images array with fallback
+    const galleryList = (selectedVehicle.gallery_images && selectedVehicle.gallery_images.length > 0)
+      ? selectedVehicle.gallery_images
+      : [selectedVehicle.image_url].filter(Boolean);
+
+    const activePhotoUrl = galleryList[activePhotoIndex] || selectedVehicle.image_url;
+
+    const angleLabels = ['Front View', 'Side Profile', 'Rear View', 'Interior Cabin'];
 
     return (
       <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '24px', background: 'var(--bg-primary)', minHeight: '100vh' }}>
@@ -209,37 +224,131 @@ const VehicleManagement = () => {
         {/* Main 2-Column Showcase Layout */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
           
-          {/* Left Column: Big Media Frame & Specs Grid */}
+          {/* Left Column: Multi-Angle Photo Frame + Dot Pagination (. . .) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
-            {/* Big Vehicle Photo Frame */}
-            <div className="glass-panel" style={{ overflow: 'hidden', height: '360px', position: 'relative', background: '#0f172a' }}>
-              {selectedVehicle.image_url ? (
+            {/* Big Vehicle Photo Frame with Active Angle Overlay */}
+            <div className="glass-panel" style={{ overflow: 'hidden', height: '380px', position: 'relative', background: '#0f172a' }}>
+              {activePhotoUrl ? (
                 <img
-                  src={selectedVehicle.image_url}
-                  alt={selectedVehicle.registration_number}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  src={activePhotoUrl}
+                  alt={`${selectedVehicle.make} ${selectedVehicle.model} - ${angleLabels[activePhotoIndex] || 'Photo'}`}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'all 0.3s ease' }}
                 />
               ) : (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Car size={80} color="var(--text-dim)" />
                 </div>
               )}
+
+              {/* Photo Angle Label Overlay */}
               <div style={{
                 position: 'absolute',
-                bottom: '16px',
-                right: '16px',
-                background: 'rgba(0,0,0,0.75)',
+                top: '16px',
+                left: '16px',
+                background: 'rgba(15, 23, 42, 0.85)',
                 backdropFilter: 'blur(8px)',
-                padding: '6px 14px',
+                padding: '6px 12px',
                 borderRadius: '8px',
                 color: '#fff',
                 fontSize: '0.8rem',
-                fontWeight: 600
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
               }}>
-                ⭐ 4.9 Rating | Verified Fleet Unit
+                <Camera size={14} color="#60a5fa" />
+                <span>Angle: {angleLabels[activePhotoIndex] || `Photo ${activePhotoIndex + 1}`}</span>
               </div>
+
+              {/* Verified Fleet Badge */}
+              <div style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(16, 185, 129, 0.85)',
+                backdropFilter: 'blur(8px)',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '0.75rem',
+                fontWeight: 700
+              }}>
+                ⭐ 4.9 Verified Commercial Unit
+              </div>
+
+              {/* MULTI-ANGLE CAROUSEL DOTS PAGINATION (. . . . ) */}
+              {galleryList.length > 1 && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid rgba(255,255,255,0.15)'
+                }}>
+                  {galleryList.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActivePhotoIndex(idx)}
+                      title={`View ${angleLabels[idx] || `Angle ${idx + 1}`}`}
+                      style={{
+                        width: activePhotoIndex === idx ? '24px' : '10px',
+                        height: '10px',
+                        borderRadius: '5px',
+                        background: activePhotoIndex === idx ? 'var(--accent-primary)' : 'rgba(255,255,255,0.3)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease'
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Thumbnail Strip Selector */}
+            {galleryList.length > 1 && (
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${galleryList.length}, 1fr)`, gap: '10px' }}>
+                {galleryList.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActivePhotoIndex(idx)}
+                    style={{
+                      padding: 0,
+                      background: 'none',
+                      border: activePhotoIndex === idx ? '2px solid var(--accent-primary)' : '2px solid transparent',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      height: '70px',
+                      cursor: 'pointer',
+                      opacity: activePhotoIndex === idx ? 1 : 0.6,
+                      transition: 'all 0.2s ease',
+                      position: 'relative'
+                    }}
+                  >
+                    <img src={imgUrl} alt={`Thumbnail ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <span style={{
+                      position: 'absolute',
+                      bottom: 0, left: 0, right: 0,
+                      background: 'rgba(0,0,0,0.7)',
+                      fontSize: '0.62rem',
+                      color: '#fff',
+                      padding: '2px 0',
+                      textAlign: 'center'
+                    }}>
+                      {angleLabels[idx] || `Angle ${idx + 1}`}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Spec Cards Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
@@ -405,7 +514,7 @@ const VehicleManagement = () => {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Vehicle Master Registry</h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Category-wise fleet dispatches, rate slabs, odometer readings, and compliance status.
+            Category-wise fleet dispatches, 50 distinct vehicle models, multi-angle photos & compliance status.
           </p>
         </div>
 
@@ -501,9 +610,9 @@ const VehicleManagement = () => {
               const CatIcon = cat.icon;
 
               return (
-                <div key={catKey} className="glass-panel" style={{ display: 'flex', overflow: 'hidden', minHeight: '260px' }}>
+                <div key={catKey} className="glass-panel" style={{ display: 'flex', overflow: 'hidden', minHeight: '280px' }}>
                   
-                  {/* Category Banner Card (Left Side Block like WowGoa layout) */}
+                  {/* Category Banner Card (Left Side Block) */}
                   <div style={{
                     width: '260px',
                     background: cat.bgGradient,
@@ -538,7 +647,7 @@ const VehicleManagement = () => {
 
                     <div>
                       <span className="badge" style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', fontSize: '0.7rem' }}>
-                        {vehicleList.length} Vehicles in Class
+                        {vehicleList.length} Vehicles in Category
                       </span>
                       <p style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '8px', opacity: 0.95 }}>
                         Rate Slab: <strong style={{ color: '#fff' }}>{cat.rate}</strong>
@@ -551,14 +660,14 @@ const VehicleManagement = () => {
                     flex: 1,
                     padding: '20px',
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
                     gap: '16px',
                     alignItems: 'stretch'
                   }}>
                     {vehicleList.map((vehicle) => (
                       <div
                         key={vehicle.id}
-                        onClick={() => setSelectedVehicle(vehicle)}
+                        onClick={() => handleOpenVehicle(vehicle)}
                         className="glass-card"
                         style={{
                           background: '#0f172a',
@@ -625,7 +734,7 @@ const VehicleManagement = () => {
                             <Gauge size={12} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
                             <strong className="font-mono" style={{ color: '#fff' }}>{Number(vehicle.current_odometer).toLocaleString()} KM</strong>
                           </span>
-                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Full Specs & Docs ➔</span>
+                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Multi-Angle View ➔</span>
                         </div>
                       </div>
                     ))}
@@ -661,7 +770,7 @@ const VehicleManagement = () => {
                 {filteredVehicles.map((vehicle) => (
                   <tr 
                     key={vehicle.id}
-                    onClick={() => setSelectedVehicle(vehicle)}
+                    onClick={() => handleOpenVehicle(vehicle)}
                     style={{ cursor: 'pointer' }}
                   >
                     <td style={{ width: '90px' }}>
@@ -733,7 +842,7 @@ const VehicleManagement = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedVehicle(vehicle);
+                          handleOpenVehicle(vehicle);
                         }}
                         className="btn-secondary"
                         style={{ padding: '6px 12px', fontSize: '0.75rem' }}
