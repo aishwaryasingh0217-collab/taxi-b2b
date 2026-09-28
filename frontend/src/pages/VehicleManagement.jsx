@@ -4,8 +4,64 @@ import {
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
   ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
   LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User,
-  ArrowLeft, Check, Radio, Navigation, Camera, Layers
+  ArrowLeft, Check, Radio, Navigation, Camera, Layers, Sparkles, DollarSign, Settings
 } from 'lucide-react';
+
+const AVAILABLE_FEATURES = [
+  'GPS Telemetry & Live Tracker',
+  'Automated FASTag Toll Pass',
+  'Dual-Zone Climate Control',
+  'Dual Dashcam & Fleet Telematics',
+  'Leather Reclining Seats',
+  'High-Speed Wi-Fi Hotspot',
+  'Speed Governor (80 km/h)',
+  'ISOFIX Child Seat Support',
+  'Commercial Fleet Insurance',
+  'SOS Emergency Response Switch'
+];
+
+const PRESET_PHOTO_PACKS = {
+  SEDAN: {
+    photo_front: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800',
+    photo_side: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800',
+    photo_rear: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=800',
+    photo_interior: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800',
+    rate: 2500,
+    km_rate: 15
+  },
+  SUV: {
+    photo_front: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800',
+    photo_side: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800',
+    photo_rear: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800',
+    photo_interior: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800',
+    rate: 4500,
+    km_rate: 18
+  },
+  EV: {
+    photo_front: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800',
+    photo_side: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800',
+    photo_rear: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800',
+    photo_interior: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800',
+    rate: 3200,
+    km_rate: 16
+  },
+  VAN: {
+    photo_front: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
+    photo_side: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=800',
+    photo_rear: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
+    photo_interior: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800',
+    rate: 5500,
+    km_rate: 22
+  },
+  LUXURY: {
+    photo_front: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800',
+    photo_side: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800',
+    photo_rear: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800',
+    photo_interior: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800',
+    rate: 8500,
+    km_rate: 30
+  }
+};
 
 const VehicleManagement = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -20,20 +76,35 @@ const VehicleManagement = () => {
   // Multi-angle photo gallery index (. . . pagination)
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  // Form State for Add Vehicle
-  const [formData, setFormData] = useState({
+  // Initial Form State for Add Vehicle
+  const initialFormState = {
     registration_number: '',
     vin: '',
     make: '',
     model: '',
     year: 2025,
     vehicle_class: 'SEDAN',
+    transmission: 'AUTOMATIC',
+    seating_capacity: 4,
     fuel_type: 'DIESEL',
     status: 'AVAILABLE',
     current_odometer: 0,
-    seating_capacity: 4,
-    image_url: ''
-  });
+    shift_rate_inr: 2500,
+    extra_km_rate_inr: 15,
+    photo_front: '',
+    photo_side: '',
+    photo_rear: '',
+    photo_interior: '',
+    features: [
+      'GPS Telemetry & Live Tracker',
+      'Automated FASTag Toll Pass',
+      'Dual-Zone Climate Control',
+      'Commercial Fleet Insurance'
+    ],
+    notes: ''
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Category horizontal scroll refs
@@ -73,25 +144,67 @@ const VehicleManagement = () => {
     }
   };
 
+  const handleApplyPhotoPreset = () => {
+    const pack = PRESET_PHOTO_PACKS[formData.vehicle_class] || PRESET_PHOTO_PACKS.SEDAN;
+    setFormData(prev => ({
+      ...prev,
+      photo_front: pack.photo_front,
+      photo_side: pack.photo_side,
+      photo_rear: pack.photo_rear,
+      photo_interior: pack.photo_interior,
+      shift_rate_inr: pack.rate,
+      extra_km_rate_inr: pack.km_rate
+    }));
+  };
+
+  const handleToggleFeature = (featureName) => {
+    setFormData(prev => {
+      const exists = prev.features.includes(featureName);
+      if (exists) {
+        return { ...prev, features: prev.features.filter(f => f !== featureName) };
+      } else {
+        return { ...prev, features: [...prev.features, featureName] };
+      }
+    });
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+
+    const gallery = [
+      formData.photo_front,
+      formData.photo_side,
+      formData.photo_rear,
+      formData.photo_interior
+    ].filter(Boolean);
+
+    const mainImage = formData.photo_front || (gallery.length > 0 ? gallery[0] : 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800');
+
+    const payload = {
+      registration_number: formData.registration_number,
+      vin: formData.vin,
+      make: formData.make,
+      model: formData.model,
+      year: Number(formData.year),
+      vehicle_class: formData.vehicle_class,
+      transmission: formData.transmission,
+      seating_capacity: Number(formData.seating_capacity),
+      fuel_type: formData.fuel_type,
+      status: formData.status,
+      current_odometer: Number(formData.current_odometer),
+      shift_rate_inr: Number(formData.shift_rate_inr),
+      extra_km_rate_inr: Number(formData.extra_km_rate_inr),
+      image_url: mainImage,
+      gallery_images: gallery.length > 0 ? gallery : [mainImage],
+      features: formData.features,
+      notes: formData.notes
+    };
+
     try {
-      await api.post('fleet/vehicles/', formData);
+      await api.post('fleet/vehicles/', payload);
       setShowAddModal(false);
       fetchVehicles();
-      setFormData({
-        registration_number: '',
-        vin: '',
-        make: '',
-        model: '',
-        year: 2025,
-        vehicle_class: 'SEDAN',
-        fuel_type: 'DIESEL',
-        status: 'AVAILABLE',
-        current_odometer: 0,
-        seating_capacity: 4,
-        image_url: ''
-      });
+      setFormData(initialFormState);
     } catch (err) {
       alert('Error saving vehicle: ' + JSON.stringify(err.response?.data || err.message));
     }
@@ -187,7 +300,7 @@ const VehicleManagement = () => {
       : [selectedVehicle.image_url].filter(Boolean);
 
     const activePhotoUrl = galleryList[activePhotoIndex] || selectedVehicle.image_url;
-    const angleLabels = ['Front View', 'Side Profile', 'Rear View', 'Interior Cabin'];
+    const angleLabels = ['Front View (Main)', 'Side Profile', 'Rear Angle', 'Interior Cabin'];
 
     return (
       <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '24px', background: 'var(--bg-primary)', minHeight: '100vh' }}>
@@ -224,8 +337,11 @@ const VehicleManagement = () => {
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>B2B CONTRACT RATE SLAB</span>
             <p style={{ fontSize: '1.6rem', fontWeight: 800, color: '#34d399', marginTop: '2px' }}>
-              {cat.rate}
+              ₹{Number(selectedVehicle.shift_rate_inr || 2500).toLocaleString('en-IN')} / shift
             </p>
+            <span style={{ fontSize: '0.8rem', color: '#60a5fa', fontWeight: 600 }}>
+              Extra KM: ₹{selectedVehicle.extra_km_rate_inr || 15}/KM
+            </span>
           </div>
         </div>
 
@@ -359,58 +475,79 @@ const VehicleManagement = () => {
             )}
 
             {/* Spec Cards Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
-                <Gauge size={20} color="#3b82f6" style={{ margin: '0 auto 6px auto' }} />
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>ODOMETER</span>
-                <strong className="font-mono" style={{ color: '#fff', fontSize: '1rem' }}>{Number(selectedVehicle.current_odometer).toLocaleString()} KM</strong>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <Gauge size={16} color="#3b82f6" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>ODOMETER</span>
+                <strong className="font-mono" style={{ color: '#fff', fontSize: '0.85rem' }}>{Number(selectedVehicle.current_odometer).toLocaleString()} KM</strong>
               </div>
 
-              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
-                <User size={20} color="#06b6d4" style={{ margin: '0 auto 6px auto' }} />
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>CAPACITY</span>
-                <strong style={{ color: '#fff', fontSize: '1rem' }}>{selectedVehicle.seating_capacity} Seats</strong>
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <User size={16} color="#06b6d4" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>SEATING</span>
+                <strong style={{ color: '#fff', fontSize: '0.85rem' }}>{selectedVehicle.seating_capacity} Seats</strong>
               </div>
 
-              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
-                <Fuel size={20} color="#f59e0b" style={{ margin: '0 auto 6px auto' }} />
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>FUEL TYPE</span>
-                <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</strong>
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <Layers size={16} color="#ec4899" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>GEARBOX</span>
+                <strong style={{ color: '#fff', fontSize: '0.85rem' }}>{selectedVehicle.transmission || 'AUTOMATIC'}</strong>
               </div>
 
-              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
-                <CatIcon size={20} color="#a855f7" style={{ margin: '0 auto 6px auto' }} />
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>CLASS</span>
-                <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</strong>
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <Fuel size={16} color="#f59e0b" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>FUEL TYPE</span>
+                <strong style={{ color: '#fff', fontSize: '0.8rem' }}>{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</strong>
+              </div>
+
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <CatIcon size={16} color="#a855f7" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>CLASS</span>
+                <strong style={{ color: '#fff', fontSize: '0.8rem' }}>{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</strong>
+              </div>
+
+              <div className="glass-card" style={{ padding: '12px', textAlign: 'center' }}>
+                <CheckCircle2 size={16} color="#10b981" style={{ margin: '0 auto 4px auto' }} />
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>EXTRA KM</span>
+                <strong style={{ color: '#34d399', fontSize: '0.85rem' }}>₹{selectedVehicle.extra_km_rate_inr || 15}/KM</strong>
               </div>
             </div>
 
             {/* Vehicle Telematics & Equipment Checklist */}
-            <div className="glass-panel" style={{ padding: '24px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="glass-panel" style={{ padding: '20px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Navigation size={18} color="#3b82f6" />
                 <span>Vehicle Telematics & Equipment Features</span>
               </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <Check size={16} color="#34d399" />
-                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>GPS Telemetry & Live Tracker</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <Check size={16} color="#34d399" />
-                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Automated FASTag Toll Pass</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <Check size={16} color="#34d399" />
-                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Dual-Zone Climate Control</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <Check size={16} color="#34d399" />
-                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Commercial Fleet Insurance</span>
-                </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {((selectedVehicle.features && selectedVehicle.features.length > 0)
+                  ? selectedVehicle.features
+                  : [
+                      'GPS Telemetry & Live Tracker',
+                      'Automated FASTag Toll Pass',
+                      'Dual-Zone Climate Control',
+                      'Commercial Fleet Insurance'
+                    ]
+                ).map((feat, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <Check size={16} color="#34d399" />
+                    <span style={{ fontSize: '0.82rem', color: '#fff' }}>{feat}</span>
+                  </div>
+                ))}
               </div>
             </div>
+
+            {selectedVehicle.notes && (
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  Operational Remarks & Dispatch Notes
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.5 }}>
+                  "{selectedVehicle.notes}"
+                </p>
+              </div>
+            )}
 
           </div>
 
@@ -770,7 +907,7 @@ const VehicleManagement = () => {
 
                         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem' }}>
                           <span style={{ color: '#34d399', fontWeight: 700 }}>
-                            {cat.rate}
+                            ₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}/shift
                           </span>
                           <span style={{ color: '#38bdf8', fontWeight: 600 }}>Inspect ➔</span>
                         </div>
@@ -807,7 +944,6 @@ const VehicleManagement = () => {
               </thead>
               <tbody>
                 {filteredVehicles.map((vehicle) => {
-                  const cat = categoryConfigs[vehicle.vehicle_class] || categoryConfigs.SEDAN;
                   return (
                     <tr 
                       key={vehicle.id}
@@ -866,7 +1002,7 @@ const VehicleManagement = () => {
                         </div>
                       </td>
                       <td>
-                        <strong style={{ color: '#34d399', fontSize: '0.85rem' }}>{cat.rate}</strong>
+                        <strong style={{ color: '#34d399', fontSize: '0.85rem' }}>₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}/shift</strong>
                       </td>
                       <td>{getStatusBadge(vehicle.status)}</td>
                       <td>
@@ -904,7 +1040,7 @@ const VehicleManagement = () => {
         </div>
       )}
 
-      {/* Add Vehicle Modal */}
+      {/* ULTRA-DETAILED ENTERPRISE ADD VEHICLE MODAL */}
       {showAddModal && (
         <div style={{
           position: 'fixed',
@@ -912,135 +1048,387 @@ const VehicleManagement = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(6px)',
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
           justify: 'center',
           zIndex: 1000,
           padding: '20px'
         }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>Add Vehicle to Fleet</h3>
-              <button onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                <X size={20} />
+          <div className="glass-panel" style={{ 
+            width: '100%', 
+            maxWidth: '850px', 
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            padding: '28px',
+            border: '1px solid rgba(255,255,255,0.15)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+          }}>
+            {/* Modal Title Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Car size={22} color="#3b82f6" />
+                  <span>Add Fleet Vehicle - Detailed Entry</span>
+                </h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  Specify complete technical parameters, multi-angle photo URLs, Indian Rupee (₹) contract rates, and telematics equipment.
+                </p>
+              </div>
+
+              <button 
+                onClick={() => setShowAddModal(false)} 
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={22} />
               </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Registration Plate *</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. B2B-TX-505"
-                  value={formData.registration_number}
-                  onChange={(e) => setFormData({ ...formData, registration_number: e.target.value })}
-                  required
-                />
+            <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              
+              {/* SECTION 1: CORE VEHICLE IDENTIFICATION & SPECS */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Settings size={16} />
+                  <span>1. Technical & Registration Specifications</span>
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Registration Plate *</label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="e.g. GA-03-AX-8899"
+                      value={formData.registration_number}
+                      onChange={(e) => setFormData({ ...formData, registration_number: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>VIN Number *</label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="e.g. 1HGCR2F83HA009988"
+                      value={formData.vin}
+                      onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Make (Brand) *</label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="e.g. Toyota / Mercedes"
+                      value={formData.make}
+                      onChange={(e) => setFormData({ ...formData, make: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Model Name *</label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="e.g. Camry Hybrid / E-Class"
+                      value={formData.model}
+                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Manufacturing Year</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      value={formData.year}
+                      onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || 2025 })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Vehicle Class Category</label>
+                    <select
+                      className="select-field"
+                      value={formData.vehicle_class}
+                      onChange={(e) => setFormData({ ...formData, vehicle_class: e.target.value })}
+                    >
+                      <option value="SEDAN">Executive Sedan</option>
+                      <option value="SUV">Premium SUV</option>
+                      <option value="EV">Electric Vehicle (EV)</option>
+                      <option value="VAN">Multi-Passenger Van</option>
+                      <option value="LUXURY">Luxury Class</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Transmission Gearbox</label>
+                    <select
+                      className="select-field"
+                      value={formData.transmission}
+                      onChange={(e) => setFormData({ ...formData, transmission: e.target.value })}
+                    >
+                      <option value="AUTOMATIC">Automatic Transmission</option>
+                      <option value="MANUAL">Manual Shift</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Seating Capacity (Pass.)</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      min="2"
+                      max="20"
+                      value={formData.seating_capacity}
+                      onChange={(e) => setFormData({ ...formData, seating_capacity: parseInt(e.target.value) || 4 })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Fuel Type</label>
+                    <select
+                      className="select-field"
+                      value={formData.fuel_type}
+                      onChange={(e) => setFormData({ ...formData, fuel_type: e.target.value })}
+                    >
+                      <option value="PETROL">Petrol</option>
+                      <option value="DIESEL">Diesel</option>
+                      <option value="CNG">CNG</option>
+                      <option value="ELECTRIC">Electric (EV)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Initial Odometer (KM)</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      value={formData.current_odometer}
+                      onChange={(e) => setFormData({ ...formData, current_odometer: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>VIN Number *</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. 1HGCR2F83HA005005"
-                  value={formData.vin}
-                  onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
-                  required
-                />
+              {/* SECTION 2: MULTI-ANGLE CAR PHOTOS GALLERY */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Camera size={16} />
+                    <span>2. Multi-Angle Vehicle Photos (4 Angle URLs)</span>
+                  </h4>
+
+                  <button
+                    type="button"
+                    onClick={handleApplyPhotoPreset}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 10px',
+                      background: 'rgba(56, 189, 248, 0.15)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      color: '#38bdf8',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    <span>Fill High-Res Photo Pack</span>
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Front View Image URL (Main) *</label>
+                    <input
+                      type="url"
+                      className="input-field"
+                      placeholder="https://images.unsplash.com/photo-front..."
+                      value={formData.photo_front}
+                      onChange={(e) => setFormData({ ...formData, photo_front: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Side Profile View URL</label>
+                    <input
+                      type="url"
+                      className="input-field"
+                      placeholder="https://images.unsplash.com/photo-side..."
+                      value={formData.photo_side}
+                      onChange={(e) => setFormData({ ...formData, photo_side: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Rear View URL</label>
+                    <input
+                      type="url"
+                      className="input-field"
+                      placeholder="https://images.unsplash.com/photo-rear..."
+                      value={formData.photo_rear}
+                      onChange={(e) => setFormData({ ...formData, photo_rear: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Interior Cabin View URL</label>
+                    <input
+                      type="url"
+                      className="input-field"
+                      placeholder="https://images.unsplash.com/photo-interior..."
+                      value={formData.photo_interior}
+                      onChange={(e) => setFormData({ ...formData, photo_interior: e.target.value })}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Make *</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. Toyota"
-                  value={formData.make}
-                  onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                  required
-                />
+              {/* SECTION 3: COMMERCIAL TARIFF RATES (INR ₹) */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <DollarSign size={16} />
+                  <span>3. Commercial Contract Tariff Rates (INR ₹)</span>
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Shift Rate Slab (₹ / 8-Hour Shift)</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      placeholder="e.g. 3500"
+                      value={formData.shift_rate_inr}
+                      onChange={(e) => setFormData({ ...formData, shift_rate_inr: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Extra Mileage Rate (₹ / KM)</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      placeholder="e.g. 18"
+                      value={formData.extra_km_rate_inr}
+                      onChange={(e) => setFormData({ ...formData, extra_km_rate_inr: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Model *</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. Camry Hybrid"
-                  value={formData.model}
-                  onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  required
-                />
+              {/* SECTION 4: TELEMATICS & AMENITIES CHECKLIST */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Navigation size={16} />
+                  <span>4. Telematics Equipment & Passenger Amenities</span>
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                  {AVAILABLE_FEATURES.map((feature) => {
+                    const isChecked = formData.features.includes(feature);
+                    return (
+                      <label
+                        key={feature}
+                        onClick={() => handleToggleFeature(feature)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: isChecked ? 'rgba(168, 85, 247, 0.15)' : '#1e293b',
+                          border: isChecked ? '1px solid #a855f7' : '1px solid var(--border-color)',
+                          color: '#fff',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <div style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '4px',
+                          background: isChecked ? '#a855f7' : 'transparent',
+                          border: isChecked ? 'none' : '1px solid var(--text-dim)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'center'
+                        }}>
+                          {isChecked && <Check size={14} color="#fff" />}
+                        </div>
+                        <span>{feature}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Year</label>
-                <input
-                  type="number"
-                  className="input-field"
-                  value={formData.year}
-                  onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                />
+              {/* SECTION 5: DUTY STATUS & REMARKS */}
+              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={16} />
+                  <span>5. Operational Status & Fleet Notes</span>
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Initial Operational Status</label>
+                    <select
+                      className="select-field"
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    >
+                      <option value="AVAILABLE">Available for Shift Dispatch</option>
+                      <option value="ON_DUTY">On Duty / Active</option>
+                      <option value="IN_MAINTENANCE">In Maintenance</option>
+                      <option value="DECOMMISSIONED">Decommissioned</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Operational Remarks / Vehicle History</label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="e.g. Executive airport unit, regular service done Sep 2026."
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Class</label>
-                <select
-                  className="select-field"
-                  value={formData.vehicle_class}
-                  onChange={(e) => setFormData({ ...formData, vehicle_class: e.target.value })}
+              {/* Modal Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddModal(false)} 
+                  className="btn-secondary"
+                  style={{ padding: '10px 20px', fontSize: '0.85rem' }}
                 >
-                  <option value="SEDAN">Executive Sedan</option>
-                  <option value="SUV">Premium SUV</option>
-                  <option value="EV">Electric Vehicle</option>
-                  <option value="VAN">Multi-Passenger Van</option>
-                  <option value="LUXURY">Luxury Class</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Fuel Type</label>
-                <select
-                  className="select-field"
-                  value={formData.fuel_type}
-                  onChange={(e) => setFormData({ ...formData, fuel_type: e.target.value })}
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn-primary"
+                  style={{ padding: '10px 24px', fontSize: '0.85rem', fontWeight: 700 }}
                 >
-                  <option value="PETROL">Petrol</option>
-                  <option value="DIESEL">Diesel</option>
-                  <option value="CNG">CNG</option>
-                  <option value="ELECTRIC">Electric (EV)</option>
-                </select>
+                  Save & Publish Vehicle
+                </button>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Initial Odometer (KM)</label>
-                <input
-                  type="number"
-                  className="input-field"
-                  value={formData.current_odometer}
-                  onChange={(e) => setFormData({ ...formData, current_odometer: parseFloat(e.target.value) })}
-                />
-              </div>
-
-              <div style={{ gridColumn: 'span 2' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Vehicle Image URL</label>
-                <input
-                  type="url"
-                  className="input-field"
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                />
-              </div>
-
-              <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Save Vehicle</button>
-              </div>
             </form>
           </div>
         </div>
@@ -1051,3 +1439,4 @@ const VehicleManagement = () => {
 };
 
 export default VehicleManagement;
+
