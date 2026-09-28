@@ -198,6 +198,9 @@ body {
 .app-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .main-content {
@@ -205,7 +208,66 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  min-width: 0;
+  width: 100%;
   overflow-y: auto;
+}
+
+/* Global Centered Portal Modal Overlay */
+.portal-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify: center;
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.portal-modal-card {
+  width: 100%;
+  max-width: 920px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+}
+
+@media (max-width: 900px) {
+  .portal-modal-overlay {
+    padding: 12px;
+  }
+  .portal-modal-card {
+    max-height: 95vh;
+    padding: 18px !important;
+  }
+  .responsive-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .responsive-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .responsive-grid-4 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .responsive-grid-6 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .responsive-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+  .responsive-grid-6 {
+    grid-template-columns: 1fr 1fr !important;
+  }
 }
 
 /* Table Design */
@@ -236,3 +298,4 @@ body {
 .custom-table tr:hover td {
   background: rgba(255, 255, 255, 0.02);
 }
+

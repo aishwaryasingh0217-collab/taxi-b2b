@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../services/api';
 import { 
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
@@ -1148,29 +1149,12 @@ const VehicleManagement = () => {
       )}
 
       {/* ULTRA-DETAILED ENTERPRISE ADD VEHICLE MODAL */}
-      {showAddModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.85)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justify: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div className="glass-panel" style={{ 
-            width: '100%', 
-            maxWidth: '850px', 
-            maxHeight: '90vh',
-            overflowY: 'auto',
+      {showAddModal && createPortal(
+        <div className="portal-modal-overlay">
+          <div className="glass-panel portal-modal-card" style={{ 
             padding: '28px',
             border: '1px solid rgba(255,255,255,0.15)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)'
           }}>
             {/* Modal Title Bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
@@ -1838,7 +1822,8 @@ const VehicleManagement = () => {
 
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
