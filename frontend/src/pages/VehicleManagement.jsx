@@ -3,7 +3,8 @@ import api from '../services/api';
 import { 
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
   ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
-  LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User
+  LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User,
+  ArrowLeft, Check, Radio, Wifi, Navigation, Shield, Award
 } from 'lucide-react';
 
 const VehicleManagement = () => {
@@ -13,9 +14,12 @@ const VehicleManagement = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' (Showcase) or 'table'
   
+  // Selected vehicle for Full Screen Detail View (like wowgoa.in/bikes?bike=...)
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [activeImageTab, setActiveImageTab] = useState(0);
+
   // Modals State
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
 
   // Form State for Add Vehicle
   const [formData, setFormData] = useState({
@@ -111,7 +115,7 @@ const VehicleManagement = () => {
     }
   };
 
-  // Category Configuration for Visual Showcase
+  // Category Configurations for Visual Showcase
   const categoryConfigs = {
     SEDAN: {
       title: 'Executive Sedans',
@@ -156,6 +160,242 @@ const VehicleManagement = () => {
     if (items.length > 0) acc[catKey] = items;
     return acc;
   }, {});
+
+  // FULL SCREEN DETAIL VIEW (like wowgoa.in/bikes?bike=bike-1)
+  if (selectedVehicle) {
+    const cat = categoryConfigs[selectedVehicle.vehicle_class] || categoryConfigs.SEDAN;
+    const CatIcon = cat.icon;
+
+    return (
+      <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '24px', background: 'var(--bg-primary)', minHeight: '100vh' }}>
+        
+        {/* Full Screen Top Navigation Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+          <button 
+            onClick={() => setSelectedVehicle(null)} 
+            className="btn-secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+          >
+            <ArrowLeft size={18} />
+            <span>Back to Fleet Showcase</span>
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span className="badge badge-info">{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</span>
+            <span className="badge badge-warning">{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</span>
+            {getStatusBadge(selectedVehicle.status)}
+          </div>
+        </div>
+
+        {/* Hero Section Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
+              {selectedVehicle.make} {selectedVehicle.model} ({selectedVehicle.year})
+            </h1>
+            <p className="font-mono" style={{ color: '#60a5fa', fontSize: '1rem', fontWeight: 600, marginTop: '4px' }}>
+              Registration Plate: {selectedVehicle.registration_number} &nbsp;|&nbsp; VIN: {selectedVehicle.vin}
+            </p>
+          </div>
+
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>B2B CONTRACT RATE SLAB</span>
+            <p style={{ fontSize: '1.6rem', fontWeight: 800, color: '#34d399', marginTop: '2px' }}>
+              {cat.rate}
+            </p>
+          </div>
+        </div>
+
+        {/* Main 2-Column Showcase Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
+          
+          {/* Left Column: Big Media Frame & Specs Grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            
+            {/* Big Vehicle Photo Frame */}
+            <div className="glass-panel" style={{ overflow: 'hidden', height: '360px', position: 'relative', background: '#0f172a' }}>
+              {selectedVehicle.image_url ? (
+                <img
+                  src={selectedVehicle.image_url}
+                  alt={selectedVehicle.registration_number}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Car size={80} color="var(--text-dim)" />
+                </div>
+              )}
+              <div style={{
+                position: 'absolute',
+                bottom: '16px',
+                right: '16px',
+                background: 'rgba(0,0,0,0.75)',
+                backdropFilter: 'blur(8px)',
+                padding: '6px 14px',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 600
+              }}>
+                ⭐ 4.9 Rating | Verified Fleet Unit
+              </div>
+            </div>
+
+            {/* Spec Cards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+                <Gauge size={20} color="#3b82f6" style={{ margin: '0 auto 6px auto' }} />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>ODOMETER</span>
+                <strong className="font-mono" style={{ color: '#fff', fontSize: '1rem' }}>{Number(selectedVehicle.current_odometer).toLocaleString()} KM</strong>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+                <User size={20} color="#06b6d4" style={{ margin: '0 auto 6px auto' }} />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>CAPACITY</span>
+                <strong style={{ color: '#fff', fontSize: '1rem' }}>{selectedVehicle.seating_capacity} Seats</strong>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+                <Fuel size={20} color="#f59e0b" style={{ margin: '0 auto 6px auto' }} />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>FUEL TYPE</span>
+                <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</strong>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+                <CatIcon size={20} color="#a855f7" style={{ margin: '0 auto 6px auto' }} />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>CLASS</span>
+                <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</strong>
+              </div>
+            </div>
+
+            {/* Vehicle Telematics & Equipment Checklist */}
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Navigation size={18} color="#3b82f6" />
+                <span>Vehicle Telematics & Equipment Features</span>
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <Check size={16} color="#34d399" />
+                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>GPS Telemetry & Live Tracker</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <Check size={16} color="#34d399" />
+                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Automated Highway Toll Tag</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <Check size={16} color="#34d399" />
+                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Dual-Zone Climate Control</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#0f172a', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <Check size={16} color="#34d399" />
+                  <span style={{ fontSize: '0.85rem', color: '#fff' }}>Commercial Fleet Insurance</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Column: Status Control, Driver Pairing & Legal Compliance Vault */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            
+            {/* Status Control Card */}
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '14px' }}>
+                Duty Status Control
+              </h3>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <select
+                  className="select-field"
+                  value={selectedVehicle.status}
+                  onChange={(e) => handleStatusChange(selectedVehicle.id, e.target.value)}
+                  style={{ flex: 1 }}
+                >
+                  <option value="AVAILABLE">Available for Shift Dispatch</option>
+                  <option value="ON_DUTY">On Duty / Active Shift</option>
+                  <option value="IN_MAINTENANCE">In Service / Maintenance</option>
+                  <option value="DECOMMISSIONED">Decommissioned</option>
+                </select>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                Updating status automatically notifies the dispatch board & driver shift roster.
+              </p>
+            </div>
+
+            {/* Driver Assignment Card */}
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <UserCheck size={18} color="#06b6d4" />
+                <span>Assigned Driver</span>
+              </h3>
+
+              {selectedVehicle.current_driver && selectedVehicle.current_driver.length > 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#0f172a', borderRadius: '10px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, #06b6d4, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700 }}>
+                    {selectedVehicle.current_driver[0].user_detail?.username?.[0]?.toUpperCase() || 'D'}
+                  </div>
+                  <div>
+                    <strong style={{ color: '#fff', fontSize: '0.9rem' }}>{selectedVehicle.current_driver[0].user_detail?.first_name} {selectedVehicle.current_driver[0].user_detail?.last_name}</strong>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>License: {selectedVehicle.current_driver[0].license_number}</p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  No active driver currently assigned.
+                </div>
+              )}
+            </div>
+
+            {/* Legal Compliance Vault Card */}
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldCheck size={18} color="#3b82f6" />
+                <span>Legal Compliance Vault</span>
+              </h3>
+
+              {selectedVehicle.compliance_docs && selectedVehicle.compliance_docs.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {selectedVehicle.compliance_docs.map((doc) => (
+                    <div key={doc.id} style={{
+                      padding: '12px 14px',
+                      background: '#0f172a',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border-color)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justify: 'space-between'
+                    }}>
+                      <div>
+                        <strong style={{ color: '#fff', fontSize: '0.85rem' }}>{doc.document_type_display || doc.document_type}</strong>
+                        <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>No: {doc.document_number}</p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        {doc.computed_status === 'EXPIRED' ? (
+                          <span className="badge badge-danger">EXPIRED ({doc.expiry_date})</span>
+                        ) : doc.computed_status === 'EXPIRING_SOON' ? (
+                          <span className="badge badge-warning">EXPIRING SOON ({doc.expiry_date})</span>
+                        ) : (
+                          <span className="badge badge-success">VALID ({doc.expiry_date})</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '16px', background: '#0f172a', borderRadius: '8px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  No legal documents filed in vault yet.
+                </div>
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -313,7 +553,6 @@ const VehicleManagement = () => {
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
                     gap: '16px',
-                    overflowX: 'auto',
                     alignItems: 'stretch'
                   }}>
                     {vehicleList.map((vehicle) => (
@@ -330,7 +569,6 @@ const VehicleManagement = () => {
                           cursor: 'pointer'
                         }}
                       >
-                        {/* Vehicle Photo Container */}
                         <div style={{ position: 'relative', height: '130px', borderRadius: '10px', overflow: 'hidden', background: '#1e293b', marginBottom: '12px' }}>
                           {vehicle.image_url ? (
                             <img
@@ -344,12 +582,10 @@ const VehicleManagement = () => {
                             </div>
                           )}
 
-                          {/* Status Badge Top Right */}
                           <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
                             {getStatusBadge(vehicle.status)}
                           </div>
 
-                          {/* Plate Badge Bottom Left */}
                           <div style={{
                             position: 'absolute',
                             bottom: '8px',
@@ -366,7 +602,6 @@ const VehicleManagement = () => {
                           </div>
                         </div>
 
-                        {/* Title & Rating */}
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>
@@ -378,7 +613,6 @@ const VehicleManagement = () => {
                             </div>
                           </div>
 
-                          {/* Specs Pills */}
                           <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
                             <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>{vehicle.fuel_type_display || vehicle.fuel_type}</span>
                             <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>{vehicle.seating_capacity} Seats</span>
@@ -386,13 +620,12 @@ const VehicleManagement = () => {
                           </div>
                         </div>
 
-                        {/* Card Footer: Odometer & Driver Pairing */}
                         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
                           <span style={{ color: 'var(--text-muted)' }}>
                             <Gauge size={12} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
                             <strong className="font-mono" style={{ color: '#fff' }}>{Number(vehicle.current_odometer).toLocaleString()} KM</strong>
                           </span>
-                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Inspect Details ➔</span>
+                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Full Specs & Docs ➔</span>
                         </div>
                       </div>
                     ))}
@@ -514,183 +747,6 @@ const VehicleManagement = () => {
               </tbody>
             </table>
           )}
-        </div>
-      )}
-
-      {/* DETAILED VEHICLE MODAL */}
-      {selectedVehicle && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.82)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justify: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '0' }}>
-            
-            {/* Modal Header Image Banner */}
-            <div style={{ position: 'relative', height: '220px', background: '#0f172a', overflow: 'hidden' }}>
-              {selectedVehicle.image_url ? (
-                <img
-                  src={selectedVehicle.image_url}
-                  alt={selectedVehicle.registration_number}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-                />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1e293b, #0f172a)' }}>
-                  <Car size={64} color="var(--text-dim)" />
-                </div>
-              )}
-              
-              <div style={{
-                position: 'absolute',
-                top: 0, left: 0, right: 0, bottom: 0,
-                background: 'linear-gradient(to top, rgba(15,23,42,1) 0%, rgba(15,23,42,0.4) 60%, rgba(0,0,0,0.6) 100%)'
-              }} />
-
-              <button
-                onClick={() => setSelectedVehicle(null)}
-                style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  background: 'rgba(0, 0, 0, 0.6)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: '#fff',
-                  borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justify: 'center',
-                  cursor: 'pointer',
-                  zIndex: 2
-                }}
-              >
-                <X size={20} />
-              </button>
-
-              <div style={{ position: 'absolute', bottom: '16px', left: '24px', zIndex: 2 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span className="badge badge-info">{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</span>
-                  <span className="badge badge-warning">{selectedVehicle.fuel_type_display || selectedVehicle.fuel_type}</span>
-                  {getStatusBadge(selectedVehicle.status)}
-                </div>
-                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: '#fff', marginTop: '6px' }}>
-                  {selectedVehicle.make} {selectedVehicle.model} ({selectedVehicle.year})
-                </h2>
-                <p className="font-mono" style={{ color: '#60a5fa', fontSize: '0.95rem', fontWeight: 600 }}>
-                  Plate: {selectedVehicle.registration_number} &nbsp;|&nbsp; VIN: {selectedVehicle.vin}
-                </p>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>ODOMETER</span>
-                  <p className="font-mono" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
-                    {Number(selectedVehicle.current_odometer).toLocaleString()} KM
-                  </p>
-                </div>
-
-                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>SEATING CAPACITY</span>
-                  <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
-                    {selectedVehicle.seating_capacity} Passengers
-                  </p>
-                </div>
-
-                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>STATUS TOGGLE</span>
-                  <select
-                    className="select-field"
-                    style={{ marginTop: '4px', padding: '4px 8px', fontSize: '0.8rem' }}
-                    value={selectedVehicle.status}
-                    onChange={(e) => handleStatusChange(selectedVehicle.id, e.target.value)}
-                  >
-                    <option value="AVAILABLE">Available</option>
-                    <option value="ON_DUTY">On Duty</option>
-                    <option value="IN_MAINTENANCE">In Maintenance</option>
-                    <option value="DECOMMISSIONED">Decommissioned</option>
-                  </select>
-                </div>
-
-                <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>ASSIGNED DRIVER</span>
-                  <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#34d399', marginTop: '6px' }}>
-                    {selectedVehicle.current_driver && selectedVehicle.current_driver.length > 0 
-                      ? selectedVehicle.current_driver[0].user_detail?.username 
-                      : 'Unassigned / Available'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Compliance Vault Documents Section */}
-              <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShieldCheck size={18} color="#3b82f6" />
-                  <span>Compliance Vault & Legal Documents</span>
-                </h4>
-
-                {selectedVehicle.compliance_docs && selectedVehicle.compliance_docs.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {selectedVehicle.compliance_docs.map((doc) => (
-                      <div key={doc.id} style={{
-                        padding: '12px 16px',
-                        background: '#0f172a',
-                        borderRadius: '8px',
-                        border: '1px solid var(--border-color)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'space-between'
-                      }}>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <strong style={{ color: '#fff', fontSize: '0.9rem' }}>{doc.document_type_display || doc.document_type}</strong>
-                            <span className="font-mono" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>({doc.document_number})</span>
-                          </div>
-                          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                            Authority: {doc.issuer_authority || 'DMV / Transport Board'} | Issued: {doc.issue_date}
-                          </p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          {doc.computed_status === 'EXPIRED' ? (
-                            <span className="badge badge-danger">EXPIRED ({doc.expiry_date})</span>
-                          ) : doc.computed_status === 'EXPIRING_SOON' ? (
-                            <span className="badge badge-warning">EXPIRING SOON ({doc.expiry_date})</span>
-                          ) : (
-                            <span className="badge badge-success">VALID (Exp: {doc.expiry_date})</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ padding: '16px', background: '#0f172a', borderRadius: '8px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                    No legal documents filed in vault yet.
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            <div style={{ padding: '16px 24px', background: '#0f172a', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setSelectedVehicle(null)} className="btn-secondary">
-                Close Panel
-              </button>
-            </div>
-
-          </div>
         </div>
       )}
 
