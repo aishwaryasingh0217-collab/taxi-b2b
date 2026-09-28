@@ -17,9 +17,14 @@ const Login = () => {
     }
   };
 
-  const handleQuickLogin = (userVal, passVal) => {
+  const handleQuickLogin = async (userVal, passVal) => {
     setUsername(userVal);
     setPassword(passVal);
+    setError('');
+    const res = await login(userVal, passVal);
+    if (!res.success) {
+      setError(res.error);
+    }
   };
 
   return (
