@@ -54,7 +54,7 @@ const DriverDirectory = () => {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Driver Operations Roster</h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Manage driver profiles, licensing verification, duty statuses, and safety scores.
+            Manage driver profiles, photo verification, licensing, duty statuses, and safety scores.
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@ const DriverDirectory = () => {
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Driver Name</th>
+                <th>Driver Name & Photo</th>
                 <th>License & Expiry</th>
                 <th>Duty Status</th>
                 <th>Assigned Vehicle</th>
@@ -110,21 +110,36 @@ const DriverDirectory = () => {
               {filteredDrivers.map((driver) => (
                 <tr key={driver.id}>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'center',
-                        fontWeight: 700,
-                        color: '#fff',
-                        fontSize: '0.85rem'
-                      }}>
-                        {(driver.user_detail?.first_name?.[0] || driver.user_detail?.username?.[0] || 'D').toUpperCase()}
-                      </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {driver.avatar_url ? (
+                        <img
+                          src={driver.avatar_url}
+                          alt={driver.user_detail?.first_name || driver.user_detail?.username}
+                          style={{
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            border: '2px solid rgba(59, 130, 246, 0.4)',
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '42px',
+                          height: '42px',
+                          borderRadius: '50%',
+                          background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'center',
+                          fontWeight: 700,
+                          color: '#fff',
+                          fontSize: '0.85rem'
+                        }}>
+                          {(driver.user_detail?.first_name?.[0] || driver.user_detail?.username?.[0] || 'D').toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <strong style={{ color: '#fff', fontSize: '0.9rem' }}>
                           {driver.user_detail?.first_name ? `${driver.user_detail.first_name} ${driver.user_detail.last_name}` : driver.user_detail?.username}
@@ -143,7 +158,15 @@ const DriverDirectory = () => {
                   <td>
                     {driver.vehicle_detail ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Car size={14} color="#3b82f6" />
+                        {driver.vehicle_detail.image_url ? (
+                          <img
+                            src={driver.vehicle_detail.image_url}
+                            alt={driver.vehicle_detail.registration_number}
+                            style={{ width: '28px', height: '20px', borderRadius: '4px', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <Car size={14} color="#3b82f6" />
+                        )}
                         <strong className="font-mono" style={{ color: '#60a5fa', fontSize: '0.85rem' }}>
                           {driver.vehicle_detail.registration_number}
                         </strong>

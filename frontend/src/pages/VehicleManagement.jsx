@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, ShieldAlert, X } from 'lucide-react';
+import { Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, ShieldAlert, X, Image } from 'lucide-react';
 
 const VehicleManagement = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -21,6 +21,7 @@ const VehicleManagement = () => {
     status: 'AVAILABLE',
     current_odometer: 0,
     seating_capacity: 4,
+    image_url: ''
   });
 
   const fetchVehicles = async () => {
@@ -56,6 +57,7 @@ const VehicleManagement = () => {
         status: 'AVAILABLE',
         current_odometer: 0,
         seating_capacity: 4,
+        image_url: ''
       });
     } catch (err) {
       alert('Error saving vehicle: ' + JSON.stringify(err.response?.data || err.message));
@@ -95,7 +97,7 @@ const VehicleManagement = () => {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Vehicle Master Registry</h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Track VIN records, fuel types, odometer readings, and compliance status.
+            Track VIN records, fuel types, odometer readings, vehicle photos, and compliance status.
           </p>
         </div>
 
@@ -144,6 +146,7 @@ const VehicleManagement = () => {
           <table className="custom-table">
             <thead>
               <tr>
+                <th>Vehicle Photo</th>
                 <th>Registration Plate</th>
                 <th>Make & Model</th>
                 <th>Class / Fuel</th>
@@ -155,15 +158,39 @@ const VehicleManagement = () => {
             <tbody>
               {filteredVehicles.map((vehicle) => (
                 <tr key={vehicle.id}>
+                  <td style={{ width: '90px' }}>
+                    {vehicle.image_url ? (
+                      <img
+                        src={vehicle.image_url}
+                        alt={`${vehicle.make} ${vehicle.model}`}
+                        style={{
+                          width: '74px',
+                          height: '48px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          border: '1px solid var(--border-color)',
+                          boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '74px',
+                        height: '48px',
+                        borderRadius: '8px',
+                        background: 'rgba(59, 130, 246, 0.1)',
+                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justify: 'center'
+                      }}>
+                        <Car size={22} color="#3b82f6" />
+                      </div>
+                    )}
+                  </td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px' }}>
-                        <Car size={18} color="#3b82f6" />
-                      </div>
-                      <div>
-                        <strong className="font-mono" style={{ color: '#fff', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
-                        <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>VIN: {vehicle.vin}</p>
-                      </div>
+                    <div>
+                      <strong className="font-mono" style={{ color: '#fff', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>VIN: {vehicle.vin}</p>
                     </div>
                   </td>
                   <td>
@@ -322,6 +349,17 @@ const VehicleManagement = () => {
                   className="input-field"
                   value={formData.current_odometer}
                   onChange={(e) => setFormData({ ...formData, current_odometer: parseFloat(e.target.value) })}
+                />
+              </div>
+
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Vehicle Image URL</label>
+                <input
+                  type="url"
+                  className="input-field"
+                  placeholder="https://images.unsplash.com/photo-..."
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                 />
               </div>
 

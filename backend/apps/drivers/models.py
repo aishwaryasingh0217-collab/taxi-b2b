@@ -19,6 +19,7 @@ class DriverProfile(models.Model):
     safety_score = models.DecimalField(max_digits=5, decimal_places=2, default=100.00, help_text="Safety score out of 100")
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=5.00)
     total_trips = models.PositiveIntegerField(default=0)
+    avatar_url = models.URLField(max_length=500, blank=True, null=True, help_text="Driver Avatar Photo URL")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
