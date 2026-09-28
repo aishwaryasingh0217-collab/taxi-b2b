@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { 
   Car, Plus, Search, Filter, Fuel, Gauge, AlertCircle, CheckCircle2, 
-  ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, Edit3 
+  ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
+  LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User
 } from 'lucide-react';
 
 const VehicleManagement = () => {
@@ -10,6 +11,7 @@ const VehicleManagement = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' (Showcase) or 'table'
   
   // Modals State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -36,7 +38,6 @@ const VehicleManagement = () => {
       const res = await api.get('fleet/vehicles/');
       const data = res.data.results || res.data;
       setVehicles(data);
-      // Update selected vehicle reference if currently viewing details
       if (selectedVehicle) {
         const updated = data.find(v => v.id === selectedVehicle.id);
         if (updated) setSelectedVehicle(updated);
@@ -110,22 +111,112 @@ const VehicleManagement = () => {
     }
   };
 
+  // Category Configuration for Visual Showcase
+  const categoryConfigs = {
+    SEDAN: {
+      title: 'Executive Sedans',
+      subtitle: 'Premium corporate comfort & airport transfers',
+      bgGradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+      icon: Car,
+      rate: '$150 / shift'
+    },
+    EV: {
+      title: 'Electric Fleet',
+      subtitle: 'Zero emissions & eco executive dispatches',
+      bgGradient: 'linear-gradient(135deg, #059669, #047857)',
+      icon: Zap,
+      rate: '$180 / shift'
+    },
+    SUV: {
+      title: 'Premium SUVs',
+      subtitle: 'Spacious 6-seater luxury & long distance',
+      bgGradient: 'linear-gradient(135deg, #d97706, #b45309)',
+      icon: Car,
+      rate: '$220 / shift'
+    },
+    VAN: {
+      title: 'Passenger Vans',
+      subtitle: 'Corporate shuttles & multi-group transfers',
+      bgGradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+      icon: Bus,
+      rate: '$260 / shift'
+    },
+    LUXURY: {
+      title: 'Luxury Fleet',
+      subtitle: 'VIP & Executive Class dispatches',
+      bgGradient: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+      icon: Crown,
+      rate: '$350 / shift'
+    }
+  };
+
+  // Group vehicles by category
+  const groupedVehicles = Object.keys(categoryConfigs).reduce((acc, catKey) => {
+    const items = filteredVehicles.filter(v => (v.vehicle_class || 'SEDAN') === catKey);
+    if (items.length > 0) acc[catKey] = items;
+    return acc;
+  }, {});
+
   return (
     <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
-      {/* Top Header & Search Control */}
+      {/* Top Header & View Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Vehicle Master Registry</h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Click on any vehicle row to inspect compliance documents, specs, and status logs.
+            Category-wise fleet dispatches, rate slabs, odometer readings, and compliance status.
           </p>
         </div>
 
-        <button onClick={() => setShowAddModal(true)} className="btn-primary">
-          <Plus size={18} />
-          <span>Add New Vehicle</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* View Switcher Toggle */}
+          <div style={{ display: 'flex', background: '#0f172a', padding: '4px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <button
+              onClick={() => setViewMode('grid')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: viewMode === 'grid' ? 'var(--accent-primary)' : 'transparent',
+                color: viewMode === 'grid' ? '#fff' : 'var(--text-muted)',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                cursor: 'pointer'
+              }}
+            >
+              <LayoutGrid size={16} />
+              <span>Showcase View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: viewMode === 'table' ? 'var(--accent-primary)' : 'transparent',
+                color: viewMode === 'table' ? '#fff' : 'var(--text-muted)',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                cursor: 'pointer'
+              }}
+            >
+              <Table size={16} />
+              <span>Table View</span>
+            </button>
+          </div>
+
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            <Plus size={18} />
+            <span>Add Vehicle</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}
@@ -157,120 +248,276 @@ const VehicleManagement = () => {
         </div>
       </div>
 
-      {/* Vehicle Registry Table */}
-      <div className="glass-panel" style={{ overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading fleet data from Django API...</div>
-        ) : filteredVehicles.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No vehicles found matching your criteria.</div>
-        ) : (
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Vehicle Photo</th>
-                <th>Registration Plate</th>
-                <th>Make & Model</th>
-                <th>Class / Fuel</th>
-                <th>Odometer</th>
-                <th>Status</th>
-                <th>Compliance Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredVehicles.map((vehicle) => (
-                <tr 
-                  key={vehicle.id}
-                  onClick={() => setSelectedVehicle(vehicle)}
-                  style={{ cursor: 'pointer' }}
-                  title="Click to view detailed vehicle specs and compliance vault"
-                >
-                  <td style={{ width: '90px' }}>
-                    {vehicle.image_url ? (
-                      <img
-                        src={vehicle.image_url}
-                        alt={`${vehicle.make} ${vehicle.model}`}
-                        style={{
-                          width: '74px',
-                          height: '48px',
-                          objectFit: 'cover',
-                          borderRadius: '8px',
-                          border: '1px solid var(--border-color)',
-                          boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
-                        }}
-                      />
-                    ) : (
+      {/* VIEW MODE 1: SHOWCASE CARD CATEGORY CAROUSEL / GRID */}
+      {viewMode === 'grid' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {loading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading fleet data from Django API...</div>
+          ) : Object.keys(groupedVehicles).length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No vehicles found matching your search.</div>
+          ) : (
+            Object.entries(groupedVehicles).map(([catKey, vehicleList]) => {
+              const cat = categoryConfigs[catKey] || categoryConfigs.SEDAN;
+              const CatIcon = cat.icon;
+
+              return (
+                <div key={catKey} className="glass-panel" style={{ display: 'flex', overflow: 'hidden', minHeight: '260px' }}>
+                  
+                  {/* Category Banner Card (Left Side Block like WowGoa layout) */}
+                  <div style={{
+                    width: '260px',
+                    background: cat.bgGradient,
+                    padding: '24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justify: 'space-between',
+                    color: '#fff',
+                    flexShrink: 0
+                  }}>
+                    <div>
                       <div style={{
-                        width: '74px',
-                        height: '48px',
-                        borderRadius: '8px',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(8px)',
                         display: 'flex',
                         alignItems: 'center',
-                        justify: 'center'
+                        justify: 'center',
+                        marginBottom: '16px'
                       }}>
-                        <Car size={22} color="#3b82f6" />
+                        <CatIcon size={24} color="#fff" />
                       </div>
-                    )}
-                  </td>
-                  <td>
-                    <div>
-                      <strong className="font-mono" style={{ color: '#fff', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>VIN: {vehicle.vin}</p>
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                        {cat.title}
+                      </h3>
+                      <p style={{ fontSize: '0.8rem', opacity: 0.9, marginTop: '6px', lineHeight: 1.4 }}>
+                        {cat.subtitle}
+                      </p>
                     </div>
-                  </td>
-                  <td>
-                    <span style={{ color: '#fff', fontWeight: 600 }}>{vehicle.make} {vehicle.model}</span>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Year: {vehicle.year} ({vehicle.seating_capacity} Seats)</p>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      <span className="badge badge-info" style={{ fontSize: '0.7rem' }}>{vehicle.vehicle_class_display || vehicle.vehicle_class}</span>
-                      <span className="badge badge-warning" style={{ fontSize: '0.7rem' }}>{vehicle.fuel_type_display || vehicle.fuel_type}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f8fafc' }}>
-                      <Gauge size={14} color="var(--text-muted)" />
-                      <span className="font-mono" style={{ fontWeight: 600 }}>{Number(vehicle.current_odometer).toLocaleString()} KM</span>
-                    </div>
-                  </td>
-                  <td>{getStatusBadge(vehicle.status)}</td>
-                  <td>
-                    {vehicle.compliance_docs && vehicle.compliance_docs.length > 0 ? (
-                      vehicle.compliance_docs.some(d => d.computed_status === 'EXPIRED') ? (
-                        <span className="badge badge-danger"><ShieldAlert size={12} /> Expired Doc</span>
-                      ) : vehicle.compliance_docs.some(d => d.computed_status === 'EXPIRING_SOON') ? (
-                        <span className="badge badge-warning"><AlertCircle size={12} /> Expiry Soon</span>
-                      ) : (
-                        <span className="badge badge-success"><CheckCircle2 size={12} /> Compliant</span>
-                      )
-                    ) : (
-                      <span className="badge badge-success"><CheckCircle2 size={12} /> Valid</span>
-                    )}
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedVehicle(vehicle);
-                      }}
-                      className="btn-secondary"
-                      style={{ padding: '6px 12px', fontSize: '0.75rem' }}
-                    >
-                      <Eye size={14} />
-                      <span>Details</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
 
-      {/* DETAILED VEHICLE MODAL / DRAWER */}
+                    <div>
+                      <span className="badge" style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', fontSize: '0.7rem' }}>
+                        {vehicleList.length} Vehicles in Class
+                      </span>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '8px', opacity: 0.95 }}>
+                        Rate Slab: <strong style={{ color: '#fff' }}>{cat.rate}</strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Vehicle Cards Grid (Right Side Cards) */}
+                  <div style={{
+                    flex: 1,
+                    padding: '20px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                    gap: '16px',
+                    overflowX: 'auto',
+                    alignItems: 'stretch'
+                  }}>
+                    {vehicleList.map((vehicle) => (
+                      <div
+                        key={vehicle.id}
+                        onClick={() => setSelectedVehicle(vehicle)}
+                        className="glass-card"
+                        style={{
+                          background: '#0f172a',
+                          padding: '14px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justify: 'space-between',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {/* Vehicle Photo Container */}
+                        <div style={{ position: 'relative', height: '130px', borderRadius: '10px', overflow: 'hidden', background: '#1e293b', marginBottom: '12px' }}>
+                          {vehicle.image_url ? (
+                            <img
+                              src={vehicle.image_url}
+                              alt={vehicle.registration_number}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Car size={40} color="var(--text-dim)" />
+                            </div>
+                          )}
+
+                          {/* Status Badge Top Right */}
+                          <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
+                            {getStatusBadge(vehicle.status)}
+                          </div>
+
+                          {/* Plate Badge Bottom Left */}
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '8px',
+                            left: '8px',
+                            background: 'rgba(0,0,0,0.75)',
+                            backdropFilter: 'blur(4px)',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            color: '#60a5fa'
+                          }} className="font-mono">
+                            {vehicle.registration_number}
+                          </div>
+                        </div>
+
+                        {/* Title & Rating */}
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>
+                              {vehicle.make} {vehicle.model}
+                            </h4>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700 }}>
+                              <Star size={12} fill="#fbbf24" />
+                              <span>4.9</span>
+                            </div>
+                          </div>
+
+                          {/* Specs Pills */}
+                          <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
+                            <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>{vehicle.fuel_type_display || vehicle.fuel_type}</span>
+                            <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>{vehicle.seating_capacity} Seats</span>
+                            <span className="badge badge-success" style={{ fontSize: '0.65rem' }}>{cat.rate}</span>
+                          </div>
+                        </div>
+
+                        {/* Card Footer: Odometer & Driver Pairing */}
+                        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                          <span style={{ color: 'var(--text-muted)' }}>
+                            <Gauge size={12} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                            <strong className="font-mono" style={{ color: '#fff' }}>{Number(vehicle.current_odometer).toLocaleString()} KM</strong>
+                          </span>
+                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Inspect Details ➔</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+              );
+            })
+          )}
+        </div>
+      ) : (
+        /* VIEW MODE 2: HIGH-DENSITY OPERATIONAL TABLE VIEW */
+        <div className="glass-panel" style={{ overflow: 'hidden' }}>
+          {loading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading fleet data from Django API...</div>
+          ) : filteredVehicles.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No vehicles found matching your criteria.</div>
+          ) : (
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th>Vehicle Photo</th>
+                  <th>Registration Plate</th>
+                  <th>Make & Model</th>
+                  <th>Class / Fuel</th>
+                  <th>Odometer</th>
+                  <th>Status</th>
+                  <th>Compliance Status</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVehicles.map((vehicle) => (
+                  <tr 
+                    key={vehicle.id}
+                    onClick={() => setSelectedVehicle(vehicle)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td style={{ width: '90px' }}>
+                      {vehicle.image_url ? (
+                        <img
+                          src={vehicle.image_url}
+                          alt={`${vehicle.make} ${vehicle.model}`}
+                          style={{
+                            width: '74px',
+                            height: '48px',
+                            objectFit: 'cover',
+                            borderRadius: '8px',
+                            border: '1px solid var(--border-color)',
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '74px',
+                          height: '48px',
+                          borderRadius: '8px',
+                          background: 'rgba(59, 130, 246, 0.1)',
+                          border: '1px solid rgba(59, 130, 246, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'center'
+                        }}>
+                          <Car size={22} color="#3b82f6" />
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <div>
+                        <strong className="font-mono" style={{ color: '#fff', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
+                        <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>VIN: {vehicle.vin}</p>
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ color: '#fff', fontWeight: 600 }}>{vehicle.make} {vehicle.model}</span>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Year: {vehicle.year} ({vehicle.seating_capacity} Seats)</p>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <span className="badge badge-info" style={{ fontSize: '0.7rem' }}>{vehicle.vehicle_class_display || vehicle.vehicle_class}</span>
+                        <span className="badge badge-warning" style={{ fontSize: '0.7rem' }}>{vehicle.fuel_type_display || vehicle.fuel_type}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f8fafc' }}>
+                        <Gauge size={14} color="var(--text-muted)" />
+                        <span className="font-mono" style={{ fontWeight: 600 }}>{Number(vehicle.current_odometer).toLocaleString()} KM</span>
+                      </div>
+                    </td>
+                    <td>{getStatusBadge(vehicle.status)}</td>
+                    <td>
+                      {vehicle.compliance_docs && vehicle.compliance_docs.length > 0 ? (
+                        vehicle.compliance_docs.some(d => d.computed_status === 'EXPIRED') ? (
+                          <span className="badge badge-danger"><ShieldAlert size={12} /> Expired Doc</span>
+                        ) : vehicle.compliance_docs.some(d => d.computed_status === 'EXPIRING_SOON') ? (
+                          <span className="badge badge-warning"><AlertCircle size={12} /> Expiry Soon</span>
+                        ) : (
+                          <span className="badge badge-success"><CheckCircle2 size={12} /> Compliant</span>
+                        )
+                      ) : (
+                        <span className="badge badge-success"><CheckCircle2 size={12} /> Valid</span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedVehicle(vehicle);
+                        }}
+                        className="btn-secondary"
+                        style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                      >
+                        <Eye size={14} />
+                        <span>Details</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      {/* DETAILED VEHICLE MODAL */}
       {selectedVehicle && (
         <div style={{
           position: 'fixed',
@@ -302,14 +549,12 @@ const VehicleManagement = () => {
                 </div>
               )}
               
-              {/* Overlay Gradient */}
               <div style={{
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 background: 'linear-gradient(to top, rgba(15,23,42,1) 0%, rgba(15,23,42,0.4) 60%, rgba(0,0,0,0.6) 100%)'
               }} />
 
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedVehicle(null)}
                 style={{
@@ -332,7 +577,6 @@ const VehicleManagement = () => {
                 <X size={20} />
               </button>
 
-              {/* Banner Info */}
               <div style={{ position: 'absolute', bottom: '16px', left: '24px', zIndex: 2 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span className="badge badge-info">{selectedVehicle.vehicle_class_display || selectedVehicle.vehicle_class}</span>
@@ -351,7 +595,6 @@ const VehicleManagement = () => {
             {/* Modal Body */}
             <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
-              {/* Specs Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 <div style={{ padding: '14px', background: '#0f172a', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>ODOMETER</span>
@@ -441,7 +684,6 @@ const VehicleManagement = () => {
 
             </div>
 
-            {/* Modal Footer */}
             <div style={{ padding: '16px 24px', background: '#0f172a', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setSelectedVehicle(null)} className="btn-secondary">
                 Close Panel
