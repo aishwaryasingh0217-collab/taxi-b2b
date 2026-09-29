@@ -7,7 +7,6 @@ import {
   Briefcase, 
   MapPin, 
   DollarSign, 
-  ShieldAlert,
   LogOut,
   ChevronRight
 } from 'lucide-react';
@@ -28,41 +27,43 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
   return (
     <aside style={{
-      width: '260px',
-      background: 'var(--bg-secondary)',
+      width: '280px',
+      background: '#ffffff',
       borderRight: '1px solid var(--border-color)',
       display: 'flex',
       flexDirection: 'column',
-      justify: 'space-between',
-      padding: '20px 14px'
+      justifyContent: 'space-between',
+      padding: '24px 16px',
+      flexShrink: 0
     }}>
       <div>
-        {/* Brand Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 8px 24px 8px', borderBottom: '1px solid var(--border-color)' }}>
+        {/* MD3 Brand Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '0 8px 24px 8px', borderBottom: '1px solid var(--border-color)' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+            width: '44px',
+            height: '44px',
+            borderRadius: '14px',
+            background: 'var(--accent-primary-container)',
+            color: 'var(--accent-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(59, 130, 246, 0.4)'
+            boxShadow: 'var(--elevation-1)'
           }}>
-            <Car size={22} color="#fff" />
+            <Car size={24} color="#0b57d0" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff' }}>APEX FLEET</h1>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500 }}>B2B Operations Platform</p>
+            <h1 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>APEX FLEET</h1>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 500 }}>Material 3 Operations</p>
           </div>
         </div>
 
         {/* Navigation Section */}
-        <div style={{ marginTop: '20px' }}>
-          <p style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700, letterSpacing: '0.08em', padding: '0 10px 10px 10px' }}>
+        <div style={{ marginTop: '24px' }}>
+          <p style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 600, letterSpacing: '0.08em', padding: '0 12px 12px 12px' }}>
             Main Menu
           </p>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -75,26 +76,37 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
-                    padding: '10px 12px',
-                    borderRadius: 'var(--radius-md)',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    borderRadius: '28px',
                     border: 'none',
-                    background: isActive ? 'linear-gradient(90deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.04))' : 'transparent',
-                    borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
-                    color: isActive ? '#fff' : isLocked ? 'var(--text-dim)' : 'var(--text-muted)',
+                    background: isActive ? 'var(--accent-primary-container)' : 'transparent',
+                    color: isActive ? 'var(--accent-on-primary-container)' : isLocked ? 'var(--text-dim)' : 'var(--text-muted)',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     opacity: isLocked ? 0.65 : 1,
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.2s cubic-bezier(0.2, 0, 0, 1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive && !isLocked) {
+                      e.currentTarget.style.background = 'var(--md-surface-container)';
+                      e.currentTarget.style.color = 'var(--text-main)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive && !isLocked) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'var(--text-muted)';
+                    }
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Icon size={18} color={isActive ? 'var(--accent-primary)' : isLocked ? '#64748b' : '#94a3b8'} />
-                    <span style={{ fontSize: '0.875rem', fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <Icon size={20} color={isActive ? '#041e49' : isLocked ? '#9aa0a6' : '#5f6368'} />
+                    <span style={{ fontSize: '0.9rem', fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
                   </div>
                   {item.badge ? (
-                    <span className="badge badge-info" style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{item.badge}</span>
+                    <span className="badge badge-info" style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: '12px' }}>{item.badge}</span>
                   ) : isActive ? (
-                    <ChevronRight size={14} color="var(--accent-primary)" />
+                    <ChevronRight size={16} color="#041e49" />
                   ) : null}
                 </button>
               );
@@ -103,31 +115,58 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* User Info & Logout */}
+      {/* User Info & Logout (MD3 Elevated Pill Card) */}
       <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px' }}>
-          <div>
-            <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>{user?.first_name || user?.username || 'Fleet Manager'}</p>
-            <span className="badge badge-success" style={{ fontSize: '0.65rem', marginTop: '2px' }}>
-              {user?.role_display || 'Admin'}
-            </span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 14px',
+          background: 'var(--md-surface-container)',
+          borderRadius: '16px',
+          border: '1px solid var(--border-color)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              background: '#0b57d0',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: '0.85rem'
+            }}>
+              {user?.username?.[0]?.toUpperCase() || 'A'}
+            </div>
+            <div>
+              <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{user?.first_name || user?.username || 'Fleet Manager'}</p>
+              <span className="badge badge-success" style={{ fontSize: '0.65rem', marginTop: '2px', padding: '2px 6px' }}>
+                {user?.role_display || 'Admin'}
+              </span>
+            </div>
           </div>
           <button
             onClick={logout}
             title="Logout"
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-              borderRadius: '8px',
-              padding: '8px',
-              color: '#f87171',
+              background: '#ffffff',
+              border: '1px solid var(--border-color)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              color: '#c5221f',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justify: 'center'
+              justifyContent: 'center',
+              boxShadow: 'var(--elevation-1)',
+              transition: 'background 0.2s ease'
             }}
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Car, Lock, User, KeyRound, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Car, Lock, User, ArrowRight } from 'lucide-react';
 
 const Login = () => {
   const { login, loading } = useAuth();
@@ -32,39 +32,48 @@ const Login = () => {
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
-      justify: 'center',
-      background: 'radial-gradient(circle at 50% 30%, #1e293b 0%, #0a0d14 70%)',
-      padding: '20px'
+      justifyContent: 'center',
+      background: 'var(--md-surface-container)',
+      padding: '24px'
     }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '440px', padding: '36px' }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '460px',
+        padding: '44px 36px',
+        background: '#ffffff',
+        borderRadius: '28px',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--elevation-3)'
+      }}>
         {/* Header Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+            width: '60px',
+            height: '60px',
+            borderRadius: '20px',
+            background: 'var(--accent-primary-container)',
+            color: 'var(--accent-primary)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 24px rgba(59, 130, 246, 0.5)',
-            marginBottom: '14px'
+            boxShadow: 'var(--elevation-1)',
+            marginBottom: '16px'
           }}>
-            <Car size={30} color="#fff" />
+            <Car size={32} color="#0b57d0" />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>APEX FLEET B2B</h1>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>APEX FLEET B2B</h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '6px' }}>
             Enterprise Driver & Fleet Operations Engine
           </p>
         </div>
 
         {error && (
           <div style={{
-            padding: '12px 14px',
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 'var(--radius-md)',
-            color: '#f87171',
+            padding: '12px 16px',
+            background: 'var(--color-danger-bg)',
+            border: '1px solid var(--color-danger-border)',
+            borderRadius: '12px',
+            color: 'var(--color-danger)',
             fontSize: '0.85rem',
             marginBottom: '20px'
           }}>
@@ -72,17 +81,17 @@ const Login = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: '6px' }}>
               Username
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <User size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 className="input-field"
-                style={{ paddingLeft: '38px' }}
+                style={{ paddingLeft: '42px', borderRadius: '12px' }}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -91,15 +100,15 @@ const Login = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: '6px' }}>
               Password
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Lock size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="password"
                 className="input-field"
-                style={{ paddingLeft: '38px' }}
+                style={{ paddingLeft: '42px', borderRadius: '12px' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -111,7 +120,7 @@ const Login = () => {
             type="submit"
             className="btn-primary"
             disabled={loading}
-            style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '8px' }}
+            style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '10px', borderRadius: '28px', fontSize: '0.95rem' }}
           >
             {loading ? 'Authenticating...' : (
               <>
@@ -123,29 +132,29 @@ const Login = () => {
         </form>
 
         {/* Preset Quick Login Buttons */}
-        <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', marginBottom: '10px', fontWeight: 600 }}>
+        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', marginBottom: '12px', fontWeight: 600, letterSpacing: '0.04em' }}>
             DEMO ROLES QUICK ACCESS
           </p>
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
             <button
               onClick={() => handleQuickLogin('admin', 'admin123')}
               className="btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '6px 12px' }}
+              style={{ fontSize: '0.78rem', padding: '8px 14px', borderRadius: '16px' }}
             >
               Fleet Admin
             </button>
             <button
               onClick={() => handleQuickLogin('dispatcher1', 'pass123')}
               className="btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '6px 12px' }}
+              style={{ fontSize: '0.78rem', padding: '8px 14px', borderRadius: '16px' }}
             >
               Dispatcher
             </button>
             <button
               onClick={() => handleQuickLogin('driver_john', 'pass123')}
               className="btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '6px 12px' }}
+              style={{ fontSize: '0.78rem', padding: '8px 14px', borderRadius: '16px' }}
             >
               Driver
             </button>
