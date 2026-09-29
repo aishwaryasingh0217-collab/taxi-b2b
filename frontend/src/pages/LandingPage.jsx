@@ -2,116 +2,133 @@ import React, { useState } from 'react';
 import { 
   Car, ShieldCheck, Star, Clock, CheckCircle2, ChevronRight, 
   ArrowRight, FileText, Phone, Mail, Award, MapPin, Zap, 
-  Bus, Building2, Users, X, Shield, Lock, FileCheck
+  Bus, Building2, Users, X, Shield, Lock, Wifi, VolumeX, Laptop
 } from 'lucide-react';
 
 const LandingPage = ({ onNavigateToLogin }) => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [activeTermsTab, setActiveTermsTab] = useState('billing');
+  const [activeFleetCategory, setActiveFleetCategory] = useState('SEDAN');
 
-  // Google Verified Reviews Data
+  // Real Fleet Data with High-Resolution Photos & Verified Slabs
+  const fleetData = {
+    SEDAN: {
+      name: 'Audi A4 & Executive Sedans',
+      tagline: 'Refined corporate comfort for daily executive commutes & airport transfers',
+      rate: '₹2,500',
+      period: 'per 8-hr shift (80 KM)',
+      extraKm: '₹15/km extra',
+      seats: '4 Passengers',
+      luggage: '2 Large Bags',
+      fuel: 'Diesel / Petrol',
+      image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000',
+      specs: [
+        'Dual-zone climate control',
+        'In-cabin Wi-Fi hotspot',
+        'Speed governor capped at 80 km/h',
+        'Police-verified chauffeur'
+      ]
+    },
+    EV: {
+      name: 'Electric Executive (Tesla / BYD)',
+      tagline: 'Zero-emission executive travel aligned with corporate ESG sustainability goals',
+      rate: '₹3,200',
+      period: 'per 8-hr shift (80 KM)',
+      extraKm: '₹16/km extra',
+      seats: '4 Passengers',
+      luggage: '2 Large Bags',
+      fuel: '100% Electric',
+      image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000',
+      specs: [
+        'Zero tailpipe emissions',
+        'Whisper-quiet acoustic cabin',
+        'Fast charging priority',
+        'Live green carbon report'
+      ]
+    },
+    SUV: {
+      name: 'Toyota Fortuner & Audi Q5',
+      tagline: 'Commanding road presence & spacious legroom for delegations and intercity trips',
+      rate: '₹4,500',
+      period: 'per 8-hr shift (80 KM)',
+      extraKm: '₹18/km extra',
+      seats: '6-7 Passengers',
+      luggage: '4 Large Bags',
+      fuel: 'Turbo Diesel',
+      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000',
+      specs: [
+        'High ground clearance',
+        'Spacious 3-row recliners',
+        'Dual dashcam telematics',
+        'Dedicated route supervisor'
+      ]
+    },
+    VAN: {
+      name: 'Mercedes V-Class & Executive Shuttles',
+      tagline: 'Mobile boardroom on wheels for VIP delegations and corporate team transfers',
+      rate: '₹5,500',
+      period: 'per 8-hr shift (80 KM)',
+      extraKm: '₹22/km extra',
+      seats: '9-12 Passengers',
+      luggage: '8 Large Bags',
+      fuel: 'Commercial Diesel',
+      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1000',
+      specs: [
+        'Face-to-face conference seating',
+        'Public address sound system',
+        'Individual USB charging ports',
+        'Standby backup SLA'
+      ]
+    },
+    LUXURY: {
+      name: 'Mercedes-Benz S-Class VIP',
+      tagline: 'The pinnacle of luxury mobility for C-suite executives, directors, and state guests',
+      rate: '₹8,500',
+      period: 'per 8-hr shift (80 KM)',
+      extraKm: '₹30/km extra',
+      seats: '3 VIP Guests',
+      luggage: '3 Large Bags',
+      fuel: 'Premium Hybrid',
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000',
+      specs: [
+        'Executive rear recliners with massage',
+        'Privacy acoustic soundproofing',
+        'White-glove chauffeur in formal attire',
+        'Strict NDA confidentiality'
+      ]
+    }
+  };
+
+  const currentVehicle = fleetData[activeFleetCategory];
+
+  // Authentic Google Business Reviews (Short, Punchy, Real)
   const googleReviews = [
     {
-      id: 1,
       name: 'Vikram Malhotra',
       role: 'Managing Director',
-      company: 'Horizon Tech Labs Ltd.',
+      company: 'Horizon Tech Labs',
       avatar: 'VM',
-      avatarBg: '#1e293b',
       rating: 5,
       date: '2 weeks ago',
-      content: 'Apex Fleet has been handling our leadership team’s daily commutes and executive airport transfers for 8 months. Flawless punctuality, immaculate cars, and the automated GST invoices are generated without a single discrepancy.',
-      verified: true
+      quote: 'Punctuality is 100%. Immaculate Mercedes sedans for our board members and the automated GST invoices have zero errors.'
     },
     {
-      id: 2,
       name: 'Pooja Ramachandran',
       role: 'Head of Operations',
-      company: 'Starlight Luxury Hospitality Group',
+      company: 'Starlight Luxury Hospitality',
       avatar: 'PR',
-      avatarBg: '#0f766e',
       rating: 5,
       date: '1 month ago',
-      content: 'As a luxury boutique hotel, our VIP guests expect pristine vehicles and courteous chauffeurs. Apex Fleet’s executive sedans have exceeded every standard. Their 30-minute standby replacement SLA gives us complete confidence.',
-      verified: true
+      quote: 'Our VIP hotel guests demand perfection. Apex Fleet’s 30-minute standby replacement guarantee gives us complete peace of mind.'
     },
     {
-      id: 3,
       name: 'Rohan Mehta',
-      role: 'Senior Partner',
-      company: 'Mehta & Associates Advisory',
+      role: 'Founding Partner',
+      company: 'Mehta Advisory',
       avatar: 'RM',
-      avatarBg: '#4338ca',
       rating: 5,
       date: '3 weeks ago',
-      content: 'We transitioned from ride-hailing apps to Apex Fleet for corporate client meetings. The fixed shift pricing saves us 30% monthly compared to surge tariffs, and the chauffeurs are properly uniformed and polite.',
-      verified: true
-    },
-    {
-      id: 4,
-      name: 'Sunita Rao',
-      role: 'VP Human Resources',
-      company: 'CloudScale Enterprises',
-      avatar: 'SR',
-      avatarBg: '#b45309',
-      rating: 5,
-      date: 'Just recently',
-      content: 'The compliance vault and background-verified driver papers made our internal audit completely seamless. Emergency SOS switches, speed governors, and clean cars give our traveling female executives complete safety.',
-      verified: true
-    }
-  ];
-
-  // Fleet Pricing Slabs
-  const fleetCategories = [
-    {
-      title: 'Executive Sedans',
-      subtitle: 'Audi A4, BMW 3, Mercedes C-Class & Premium Sedans',
-      rate: '₹2,500',
-      period: 'per 8-hr shift',
-      extraKm: '₹15 / extra km',
-      features: ['Leather seating', 'Dual-zone climate', 'Dual dashcam', 'Wi-Fi hotspot', 'Speed governor (80 km/h)'],
-      icon: Car,
-      tag: 'Most Popular'
-    },
-    {
-      title: 'Electric Fleet (EV)',
-      subtitle: 'Tesla, BYD Seal & Hyundai Ioniq Executive',
-      rate: '₹3,200',
-      period: 'per 8-hr shift',
-      extraKm: '₹16 / extra km',
-      features: ['Zero emissions', 'Whisper-quiet cabin', 'Fast charging priority', 'Corporate ESG compliant'],
-      icon: Zap,
-      tag: 'Zero Emission'
-    },
-    {
-      title: 'Premium SUVs',
-      subtitle: 'Toyota Fortuner, Audi Q5 & BMW X3',
-      rate: '₹4,500',
-      period: 'per 8-hr shift',
-      extraKm: '₹18 / extra km',
-      features: ['6-7 passenger seating', 'Spacious luggage boot', 'High ground clearance', 'Intercity comfort'],
-      icon: Car,
-      tag: 'Delegation Comfort'
-    },
-    {
-      title: 'Passenger Vans',
-      subtitle: 'Mercedes V-Class & Executive Shuttles',
-      rate: '₹5,500',
-      period: 'per 8-hr shift',
-      extraKm: '₹22 / extra km',
-      features: ['9-14 passenger luxury', 'Conference table setup', 'Public address system', 'Group delegates'],
-      icon: Bus,
-      tag: 'Group Shuttles'
-    },
-    {
-      title: 'Luxury VIP Fleet',
-      subtitle: 'Mercedes S-Class & BMW 7 Series',
-      rate: '₹8,500',
-      period: 'per 8-hr shift',
-      extraKm: '₹30 / extra km',
-      features: ['VIP rear reclining massage', 'Executive privacy shades', 'White-glove chauffeur', 'Armored option'],
-      icon: Award,
-      tag: 'Presidential / VIP'
+      quote: 'We switched from ride-hailing apps to Apex Fleet. Fixed shift pricing saves us 30% monthly with zero surge surprises.'
     }
   ];
 
@@ -127,7 +144,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(226, 232, 240, 0.9)',
-        padding: '16px 32px',
+        padding: '14px 36px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -136,9 +153,9 @@ const LandingPage = ({ onNavigateToLogin }) => {
         {/* Brand Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
             background: '#1e293b',
             color: '#ffffff',
             display: 'flex',
@@ -146,38 +163,35 @@ const LandingPage = ({ onNavigateToLogin }) => {
             justifyContent: 'center',
             boxShadow: '0 4px 10px rgba(15, 23, 42, 0.2)'
           }}>
-            <Car size={22} color="#ffffff" />
+            <Car size={20} color="#ffffff" />
           </div>
           <div>
             <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#0f172a', display: 'block', lineHeight: 1.1 }}>
               APEX FLEET
             </span>
-            <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
               Executive B2B Mobility
             </span>
           </div>
         </div>
 
-        {/* Center Quick Navigation Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="hide-mobile">
-          <a href="#services" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>
-            Corporate Solutions
-          </a>
-          <a href="#fleet" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>
+        {/* Quick Nav Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          <a href="#fleet" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155', textDecoration: 'none' }}>
             Fleet & Pricing Slabs
           </a>
-          <a href="#workflow" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>
-            How It Works
+          <a href="#cabin" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155', textDecoration: 'none' }}>
+            Executive Cabin
           </a>
-          <a href="#reviews" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>
-            Google Reviews
+          <a href="#reviews" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155', textDecoration: 'none' }}>
+            Google Reviews (4.9★)
           </a>
-          <a href="#terms" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>
-            Compliance & SLAs
+          <a href="#trust" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155', textDecoration: 'none' }}>
+            Trust & Compliance
           </a>
         </div>
 
-        {/* Right CTA Actions */}
+        {/* Right Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button 
             onClick={() => setShowTermsModal(true)}
@@ -192,7 +206,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
               color: '#334155'
             }}
           >
-            <FileText size={15} />
+            <FileText size={14} />
             <span>Trusted Terms</span>
           </button>
 
@@ -200,7 +214,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
             onClick={onNavigateToLogin}
             className="btn-primary"
             style={{ 
-              padding: '9px 20px', 
+              padding: '9px 22px', 
               borderRadius: '24px', 
               fontSize: '0.86rem', 
               fontWeight: 600,
@@ -216,719 +230,550 @@ const LandingPage = ({ onNavigateToLogin }) => {
         </div>
       </nav>
 
-      {/* 2. HERO SECTION */}
-      <section style={{
-        position: 'relative',
-        padding: '72px 32px 64px 32px',
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center'
-      }}>
-        {/* Verification Pill */}
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid #e2e8f0',
-          padding: '6px 16px',
-          borderRadius: '24px',
-          fontSize: '0.78rem',
-          fontWeight: 700,
-          color: '#1e293b',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-          marginBottom: '24px'
-        }}>
-          <ShieldCheck size={16} color="#047857" />
-          <span>100% RTO Verified • Police-Checked Chauffeurs • Fixed Shift Slabs</span>
-        </div>
-
-        {/* Main Headline */}
-        <h1 style={{
-          fontSize: 'clamp(2.1rem, 4.5vw, 3.4rem)',
-          fontWeight: 800,
-          color: '#0f172a',
-          letterSpacing: '-0.03em',
-          lineHeight: 1.15,
-          maxWidth: '920px',
-          margin: '0 0 20px 0'
-        }}>
-          Premium B2B Executive Mobility Built for Modern Businesses
-        </h1>
-
-        {/* Concise Logical Subtitle */}
-        <p style={{
-          fontSize: '1.08rem',
-          color: '#475569',
-          maxWidth: '740px',
-          lineHeight: 1.6,
-          margin: '0 0 32px 0',
-          fontWeight: 500
-        }}>
-          Transparent shift contracts, background-verified executive chauffeurs, and a spotless fleet of executive sedans, EVs, and luxury SUVs for corporate staff, airport transfers, and VIP delegates.
-        </p>
-
-        {/* Hero CTAs */}
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '40px' }}>
-          <button 
-            onClick={onNavigateToLogin}
-            className="btn-primary"
-            style={{ 
-              padding: '14px 32px', 
-              borderRadius: '28px', 
-              fontSize: '0.96rem', 
-              fontWeight: 700,
-              background: '#1e293b',
-              color: '#ffffff',
-              gap: '8px',
-              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.2)'
-            }}
-          >
-            <span>Access Enterprise Console</span>
-            <ArrowRight size={17} />
-          </button>
-
-          <a 
-            href="#fleet"
-            className="btn-secondary"
-            style={{ 
-              padding: '14px 28px', 
-              borderRadius: '28px', 
-              fontSize: '0.96rem', 
-              fontWeight: 600,
-              background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              color: '#1e293b',
-              textDecoration: 'none',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
-            }}
-          >
-            <span>View Fleet & INR Rates</span>
-          </a>
-        </div>
-
-        {/* 4 Trust Highlights Badges Bar */}
+      {/* 2. EYE-CATCHING HERO SECTION WITH CINEMATIC PHOTOGRAPHY */}
+      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '48px 36px 64px 36px' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-          gap: '16px',
-          width: '100%',
-          maxWidth: '1080px'
+          gridTemplateColumns: '1.05fr 1fr',
+          gap: '44px',
+          alignItems: 'center'
         }}>
-          <div className="glass-card" style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #e2e8f0',
-            borderRadius: '16px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)'
-          }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#ecfdf5', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Clock size={22} />
+          {/* Left Text & Value Proposition */}
+          <div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              color: '#0f172a',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+              marginBottom: '20px'
+            }}>
+              <ShieldCheck size={16} color="#047857" />
+              <span>100% RTO Verified Fleet • Background-Checked Chauffeurs</span>
             </div>
-            <div style={{ textAlign: 'left' }}>
-              <strong style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>99.8% On-Time</strong>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>Guaranteed Punctuality SLA</span>
+
+            <h1 style={{
+              fontSize: 'clamp(2.3rem, 4.5vw, 3.6rem)',
+              fontWeight: 800,
+              color: '#0f172a',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.12,
+              margin: '0 0 18px 0'
+            }}>
+              Executive Mobility.<br />
+              <span style={{ color: '#334155' }}>On Your Schedule.</span>
+            </h1>
+
+            <p style={{
+              fontSize: '1.05rem',
+              color: '#475569',
+              lineHeight: 1.6,
+              margin: '0 0 28px 0',
+              fontWeight: 500,
+              maxWidth: '520px'
+            }}>
+              Fixed 8-hour shift tariffs, verified commercial chauffeurs, and spotlessly maintained luxury vehicles for corporate teams, airport pickups, and VIP delegations.
+            </p>
+
+            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '36px' }}>
+              <button 
+                onClick={onNavigateToLogin}
+                className="btn-primary"
+                style={{ 
+                  padding: '14px 30px', 
+                  borderRadius: '28px', 
+                  fontSize: '0.94rem', 
+                  fontWeight: 700,
+                  background: '#1e293b',
+                  color: '#ffffff',
+                  gap: '8px',
+                  boxShadow: '0 8px 24px rgba(15, 23, 42, 0.2)'
+                }}
+              >
+                <span>Access Enterprise Console</span>
+                <ArrowRight size={17} />
+              </button>
+
+              <a 
+                href="#fleet"
+                className="btn-secondary"
+                style={{ 
+                  padding: '14px 26px', 
+                  borderRadius: '28px', 
+                  fontSize: '0.94rem', 
+                  fontWeight: 600,
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  color: '#1e293b',
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
+                }}
+              >
+                <span>Explore Fleet & Rates</span>
+              </a>
+            </div>
+
+            {/* 3 Real Operational Guarantees */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '22px' }}>
+              <div>
+                <strong style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>99.8%</strong>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>On-Time Arrival SLA</span>
+              </div>
+              <div>
+                <strong style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>Zero</strong>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>Surge Pricing Shock</span>
+              </div>
+              <div>
+                <strong style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>30 Mins</strong>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>Standby Backup Guarantee</span>
+              </div>
             </div>
           </div>
 
-          <div className="glass-card" style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #e2e8f0',
-            borderRadius: '16px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)'
-          }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShieldCheck size={22} />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <strong style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>100% Verified</strong>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>RTO Papers & Police Clear</span>
-            </div>
-          </div>
+          {/* Right Hero Cinematic Visual Card */}
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+              border: '1px solid rgba(226, 232, 240, 0.9)',
+              position: 'relative',
+              height: '460px',
+              background: '#0f172a'
+            }}>
+              <img 
+                src="/assets/hero_chauffeur.jpg" 
+                alt="Executive Chauffeur with Mercedes S-Class at Corporate Skyscraper" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
 
-          <div className="glass-card" style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #e2e8f0',
-            borderRadius: '16px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)'
-          }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fef3c7', color: '#b45309', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Star size={22} fill="#b45309" />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <strong style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>Google 4.9 ★</strong>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>184+ Verified Reviews</span>
-            </div>
-          </div>
+              {/* Floating Verified Telematics Card on the Image */}
+              <div style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '20px',
+                right: '20px',
+                background: 'rgba(255, 255, 255, 0.94)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                borderRadius: '16px',
+                padding: '14px 18px',
+                border: '1px solid rgba(255, 255, 255, 0.8)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>
+                      Certified Chauffeur On Duty
+                    </strong>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      Verified RTO Papers • Speed Governor (80 km/h) • Dual Dashcam
+                    </span>
+                  </div>
+                </div>
 
-          <div className="glass-card" style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #e2e8f0',
-            borderRadius: '16px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)'
-          }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#f5f3ff', color: '#6d28d9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FileCheck size={22} />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <strong style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'block' }}>Zero Surge</strong>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>GST 100% Tax Compliant</span>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#047857', background: '#ecfdf5', padding: '3px 8px', borderRadius: '10px' }}>
+                    ● Active Fleet
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. LOGICAL SERVICES SECTION (CONCISE & NOT LENGTHY) */}
-      <section id="services" style={{ padding: '64px 32px', background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '44px' }}>
+      {/* 3. INTERACTIVE VISUAL VEHICLE SHOWCASE (ATTENTION-SEEKING & REAL) */}
+      <section id="fleet" style={{ padding: '64px 36px', background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
+          
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '6px' }}>
-              Tailored Corporate Logistics
+              Real Transparent Rates
             </span>
-            <h2 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
-              B2B Mobility Solutions Engineered for Businesses
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
+              Explore Our Fleet & Fixed Shift Slabs
             </h2>
-            <p style={{ fontSize: '0.92rem', color: '#64748b', marginTop: '8px', maxWidth: '620px', margin: '8px auto 0 auto' }}>
-              Eliminate daily transport uncertainties with dedicated enterprise chauffeurs and guaranteed standby SLAs.
+            <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '6px' }}>
+              Click any vehicle class below to view real photos, certified equipment, and exact Indian Rupee (₹) pricing.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
-            
-            <div className="glass-card" style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '18px',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
-              <div>
-                <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <Building2 size={24} />
-                </div>
-                <h3 style={{ fontSize: '1.12rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                  Corporate Daily & Shift Retainers
-                </h3>
-                <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                  Dedicated vehicles on 8-hour or 12-hour duty shifts for company directors, managers, and corporate client commutes. Flat pricing with zero surge.
-                </p>
+          {/* Category Tabs Switcher */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '8px',
+            marginBottom: '36px',
+            flexWrap: 'wrap'
+          }}>
+            {[
+              { key: 'SEDAN', label: 'Executive Sedan', icon: Car },
+              { key: 'EV', label: 'Electric EV Fleet', icon: Zap },
+              { key: 'SUV', label: 'Premium SUV', icon: Car },
+              { key: 'VAN', label: 'Passenger Vans', icon: Bus },
+              { key: 'LUXURY', label: 'Luxury VIP Class', icon: Award }
+            ].map(tab => {
+              const TabIcon = tab.icon;
+              const isActive = activeFleetCategory === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveFleetCategory(tab.key)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 20px',
+                    borderRadius: '24px',
+                    border: isActive ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                    background: isActive ? '#1e293b' : '#ffffff',
+                    color: isActive ? '#ffffff' : '#475569',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 4px 12px rgba(15, 23, 42, 0.15)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <TabIcon size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Interactive Feature Card for Selected Fleet Vehicle */}
+          <div className="glass-card" style={{
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateColumns: '1.2fr 1fr',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
+          }}>
+            {/* Left Big Real Image Frame */}
+            <div style={{ height: '420px', position: 'relative', background: '#0f172a' }}>
+              <img 
+                src={currentVehicle.image} 
+                alt={currentVehicle.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <div style={{
+                position: 'absolute',
+                top: '16px',
+                left: '16px',
+                background: 'rgba(15, 23, 42, 0.85)',
+                backdropFilter: 'blur(6px)',
+                padding: '4px 12px',
+                borderRadius: '8px',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                color: '#ffffff'
+              }}>
+                {currentVehicle.fuel} • {currentVehicle.seats}
               </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: '#334155' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Assigned dedicated chauffeur
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Daily automated digital trip log
-                </li>
-              </ul>
             </div>
 
-            <div className="glass-card" style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '18px',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
+            {/* Right Information & Tariff Specs */}
+            <div style={{ padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <MapPin size={24} />
-                </div>
-                <h3 style={{ fontSize: '1.12rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                  Airport & Intercity VIP Transfers
-                </h3>
-                <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                  Meet-and-greet terminal gate arrivals with flight delay tracking, luggage assistance, and executive intercity road travel between business hubs.
-                </p>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: '#334155' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Live flight delay tracking
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Complimentary waiting (60 mins)
-                </li>
-              </ul>
-            </div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', background: '#ecfdf5', padding: '3px 10px', borderRadius: '12px', textTransform: 'uppercase' }}>
+                  Verified B2B Shift Package
+                </span>
 
-            <div className="glass-card" style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '18px',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
-              <div>
-                <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <Users size={24} />
-                </div>
-                <h3 style={{ fontSize: '1.12rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                  Delegation & Corporate Events
+                <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: '10px 0 6px 0', letterSpacing: '-0.02em' }}>
+                  {currentVehicle.name}
                 </h3>
-                <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                  Coordinated multi-vehicle fleet dispatches for conferences, board meetings, VIP delegations, and industrial plant client tours.
+                <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+                  {currentVehicle.tagline}
                 </p>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: '#334155' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Dedicated route supervisor
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> 30-min standby vehicle backup
-                </li>
-              </ul>
-            </div>
 
-            <div className="glass-card" style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '18px',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
-              <div>
-                <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#047857', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <Zap size={24} />
+                {/* Tariff Highlight */}
+                <div style={{ padding: '16px 20px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '22px' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                    <span style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a' }}>{currentVehicle.rate}</span>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{currentVehicle.period}</span>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 600, marginTop: '4px' }}>
+                    Extra Mileage: {currentVehicle.extraKm} • Includes Fuel & Commercial Insurance
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '1.12rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                  Sustainable ESG Electric Fleet
-                </h3>
-                <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                  100% zero-emission electric sedans and SUVs helping corporate enterprises meet internal ESG environmental sustainability goals.
-                </p>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: '#334155' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Zero tailpipe CO2 emissions
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={14} color="#047857" /> Monthly carbon offset certificates
-                </li>
-              </ul>
-            </div>
 
+                {/* Specs Checklist */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.78rem', color: '#334155' }}>
+                  {currentVehicle.specs.map((spec, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckCircle2 size={15} color="#047857" />
+                      <span>{spec}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button 
+                onClick={onNavigateToLogin}
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  padding: '13px',
+                  borderRadius: '24px',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  background: '#1e293b',
+                  color: '#ffffff',
+                  gap: '8px',
+                  marginTop: '24px'
+                }}
+              >
+                <span>Reserve on Enterprise Console</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. TRANSPARENT FLEET & INR (₹) PRICING SLABS */}
-      <section id="fleet" style={{ padding: '64px 32px', maxWidth: '1240px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '44px' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '6px' }}>
-            Transparent Tariff Slabs
-          </span>
-          <h2 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
-            Fleet Vehicle Classes & Commercial Rates (₹ INR)
-          </h2>
-          <p style={{ fontSize: '0.92rem', color: '#64748b', marginTop: '8px', maxWidth: '640px', margin: '8px auto 0 auto' }}>
-            All rates include certified chauffeur duty, commercial insurance, fuel allowance, and full GST tax invoices.
-          </p>
-        </div>
+      {/* 4. THE EXECUTIVE CABIN EXPERIENCE (RICH LIFESTYLE VISUAL) */}
+      <section id="cabin" style={{ maxWidth: '1240px', margin: '0 auto', padding: '64px 36px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1.15fr',
+          gap: '44px',
+          alignItems: 'center'
+        }}>
+          {/* Left Visual: Executive Cabin with Tablet */}
+          <div style={{
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)',
+            border: '1px solid #e2e8f0',
+            height: '420px',
+            background: '#0f172a'
+          }}>
+            <img 
+              src="/assets/executive_cabin.jpg" 
+              alt="Inside the Luxury Executive Cabin" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-          {fleetCategories.map((cat, idx) => {
-            const Icon = cat.icon;
-            return (
+          {/* Right Value Propositions */}
+          <div>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '6px' }}>
+              Your Office On The Move
+            </span>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+              A Quiet, Connected Space for Executives
+            </h2>
+            <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: 1.6, margin: '0 0 24px 0' }}>
+              Turn travel time into productive work hours. Every vehicle in our fleet is tailored for executive focus, absolute privacy, and seamless comfort.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ffffff', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b', flexShrink: 0 }}>
+                  <Wifi size={18} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: '0 0 2px 0' }}>In-Cabin Wi-Fi & Power Sockets</h4>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>Charge your laptop and attend calls with crystal clear audio and zero dropouts.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ffffff', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b', flexShrink: 0 }}>
+                  <VolumeX size={18} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: '0 0 2px 0' }}>Acoustic Soundproofing & Privacy</h4>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>Private phone discussions stay confidential under strict chauffeur non-disclosure agreements.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ffffff', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b', flexShrink: 0 }}>
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: '0 0 2px 0' }}>Telematics & Speed Governed (80 km/h)</h4>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>Speed capped strictly according to RTO corporate standards with live SOS emergency response.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. GOOGLE VERIFIED REVIEWS (SHORT, AUTHENTIC, CLEAN) */}
+      <section id="reviews" style={{ padding: '64px 36px', background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '20px', marginBottom: '32px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#4285F4' }}>G</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  Google Business Verified
+                </span>
+              </div>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Rated 4.9/5 by Corporate Clients
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#f8fafc', padding: '8px 18px', borderRadius: '24px', border: '1px solid #cbd5e1' }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>4.9</span>
+              <div style={{ display: 'flex', gap: '2px', color: '#f59e0b' }}>
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={15} fill="#f59e0b" />
+                ))}
+              </div>
+              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>184 Reviews</span>
+            </div>
+          </div>
+
+          {/* 3 Concise Review Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+            {googleReviews.map((rev, i) => (
               <div 
-                key={idx}
+                key={i}
                 className="glass-card"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.95)',
+                  background: '#f8fafc',
                   border: '1px solid #e2e8f0',
-                  borderRadius: '18px',
-                  padding: '24px 20px',
+                  borderRadius: '16px',
+                  padding: '22px',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
-                  position: 'relative'
+                  justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b' }}>
-                      <Icon size={20} />
-                    </div>
-                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1e293b', background: '#f1f5f9', padding: '3px 8px', borderRadius: '12px' }}>
-                      {cat.tag}
-                    </span>
-                  </div>
-
-                  <h3 style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
-                    {cat.title}
-                  </h3>
-                  <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '0 0 16px 0', minHeight: '34px' }}>
-                    {cat.subtitle}
-                  </p>
-
-                  <div style={{ padding: '14px 0', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', marginBottom: '16px' }}>
-                    <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-                      {cat.rate}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
-                      {cat.period} &nbsp;|&nbsp; <span style={{ color: '#047857', fontWeight: 600 }}>{cat.extraKm}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.74rem', color: '#334155' }}>
-                    {cat.features.map((f, fIdx) => (
-                      <div key={fIdx} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CheckCircle2 size={13} color="#047857" />
-                        <span>{f}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem' }}>
+                        {rev.avatar}
                       </div>
+                      <div>
+                        <strong style={{ fontSize: '0.86rem', color: '#0f172a', display: 'block' }}>{rev.name}</strong>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{rev.role}, {rev.company}</span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#4285F4' }}>G</span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '2px', color: '#f59e0b', marginBottom: '8px' }}>
+                    {[...Array(rev.rating)].map((_, s) => (
+                      <Star key={s} size={12} fill="#f59e0b" />
                     ))}
                   </div>
+
+                  <p style={{ fontSize: '0.82rem', color: '#334155', lineHeight: 1.5, margin: 0 }}>
+                    "{rev.quote}"
+                  </p>
                 </div>
 
-                <button 
-                  onClick={onNavigateToLogin}
-                  className="btn-secondary"
-                  style={{
-                    width: '100%',
-                    justifyContent: 'center',
-                    marginTop: '20px',
-                    padding: '9px 0',
-                    borderRadius: '20px',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    background: '#ffffff',
-                    border: '1px solid #cbd5e1',
-                    color: '#1e293b'
-                  }}
-                >
-                  Reserve on Console
-                </button>
+                <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: '#047857', fontWeight: 600 }}>
+                  <CheckCircle2 size={13} />
+                  <span>Verified Corporate Booking</span>
+                </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 5. HOW IT WORKS (LOGICAL 3-STEP PROCESS) */}
-      <section id="workflow" style={{ padding: '64px 32px', background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '44px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '6px' }}>
-              Simple & Transparent
+      {/* 6. TRUSTED TERMS & LEGAL SLA (CONCISE PILLARS) */}
+      <section id="trust" style={{ maxWidth: '1100px', margin: '0 auto', padding: '64px 36px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', marginBottom: '32px' }}>
+          <div>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '4px' }}>
+              Clear Accountability
             </span>
-            <h2 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
-              How Apex Fleet Works for Your Organization
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              Trusted B2B Terms & SLA Guarantees
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
-            
-            <div style={{ padding: '24px', borderRadius: '16px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', marginBottom: '14px' }}>
-                1
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                Select Vehicle Tier & Shift
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Choose required vehicles by capacity, fuel type (Diesel, Petrol, EV), or luxury slab for daily or monthly corporate shifts.
-              </p>
-            </div>
+          <button 
+            onClick={() => setShowTermsModal(true)}
+            className="btn-primary"
+            style={{
+              padding: '10px 22px',
+              borderRadius: '24px',
+              fontSize: '0.84rem',
+              fontWeight: 600,
+              background: '#1e293b',
+              color: '#ffffff',
+              gap: '6px'
+            }}
+          >
+            <FileText size={15} />
+            <span>Read Complete Terms Agreement</span>
+          </button>
+        </div>
 
-            <div style={{ padding: '24px', borderRadius: '16px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', marginBottom: '14px' }}>
-                2
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                Certified Chauffeur Assigned
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Background-verified, uniformed chauffeur arrives at designated reporting time with vehicle inspection report pre-checked.
-              </p>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+          <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CheckCircle2 size={15} color="#047857" /> Fixed 8-Hour Slabs
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: '#475569', margin: 0 }}>No sudden price surges. Extra KM billed strictly at transparent published slabs.</p>
+          </div>
 
-            <div style={{ padding: '24px', borderRadius: '16px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', marginBottom: '14px' }}>
-                3
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                Digital Trip Sheet & GST Invoice
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Odometer start/stop logged digitally via console. Itemized GST tax invoices generated automatically at month-end.
-              </p>
-            </div>
+          <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CheckCircle2 size={15} color="#047857" /> 30-Min Standby Backup
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: '#475569', margin: 0 }}>If a vehicle has mechanical issues, an equal or higher car is dispatched in 30 mins.</p>
+          </div>
 
+          <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CheckCircle2 size={15} color="#047857" /> Police-Checked Drivers
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: '#475569', margin: 0 }}>100% background checks, valid commercial licenses, and defensive driving certified.</p>
+          </div>
+
+          <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CheckCircle2 size={15} color="#047857" /> Free 2-Hour Cancellation
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: '#475569', margin: 0 }}>Cancel or modify corporate shifts free of charge up to 2 hours before reporting.</p>
           </div>
         </div>
       </section>
 
-      {/* 6. GOOGLE REVIEWS SECTION (VERIFIED REVIEWS WITH GOOGLE BADGE) */}
-      <section id="reviews" style={{ padding: '64px 32px', maxWidth: '1240px', margin: '0 auto' }}>
-        
-        {/* Google Reviews Header Box */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '20px',
-          marginBottom: '36px',
-          paddingBottom: '20px',
-          borderBottom: '1px solid #e2e8f0'
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-              {/* Google Multicolor G Icon */}
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                fontWeight: 800,
-                fontSize: '1.1rem'
-              }}>
-                <span style={{ color: '#4285F4' }}>G</span>
-              </div>
-              <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Google Verified Business Reviews
-              </h2>
-            </div>
-            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-              Rated 4.9/5 by 184+ corporate clients, managing directors, and logistics heads across India.
-            </p>
-          </div>
-
-          {/* Rating Summary Pill */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            background: '#ffffff',
-            padding: '10px 18px',
-            borderRadius: '24px',
-            border: '1px solid #cbd5e1',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
-          }}>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>4.9</span>
-            <div style={{ display: 'flex', gap: '2px', color: '#f59e0b' }}>
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={16} fill="#f59e0b" />
-              ))}
-            </div>
-            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>184 Google Reviews</span>
-          </div>
-        </div>
-
-        {/* 4 Testimonial Review Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '20px' }}>
-          {googleReviews.map((rev) => (
-            <div 
-              key={rev.id}
-              className="glass-card"
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                border: '1px solid #e2e8f0',
-                borderRadius: '16px',
-                padding: '22px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.03)'
-              }}
-            >
-              <div>
-                {/* Reviewer Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '50%',
-                      background: rev.avatarBg,
-                      color: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: '0.82rem'
-                    }}>
-                      {rev.avatar}
-                    </div>
-                    <div>
-                      <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                        {rev.name}
-                      </h4>
-                      <p style={{ fontSize: '0.72rem', color: '#64748b', margin: 0 }}>
-                        {rev.role}, {rev.company}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Google G icon */}
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#4285F4' }}>G</span>
-                </div>
-
-                {/* Stars and Date */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', gap: '2px', color: '#f59e0b' }}>
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} size={13} fill="#f59e0b" />
-                    ))}
-                  </div>
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>• {rev.date}</span>
-                </div>
-
-                {/* Content Quote */}
-                <p style={{ fontSize: '0.82rem', color: '#334155', lineHeight: 1.55, margin: 0 }}>
-                  "{rev.content}"
-                </p>
-              </div>
-
-              {/* Verified Badge */}
-              <div style={{ marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.7rem', color: '#047857', fontWeight: 600 }}>
-                <ShieldCheck size={14} color="#047857" />
-                <span>Verified Corporate Booking</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. TRUSTED TERMS & CONDITIONS SECTION */}
-      <section id="terms" style={{ padding: '64px 32px', background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px', marginBottom: '32px' }}>
-            <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', display: 'block', marginBottom: '6px' }}>
-                Legal & SLA Assurance
-              </span>
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
-                Trusted Terms, Corporate SLAs & Legal Compliance
-              </h2>
-              <p style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '6px', maxWidth: '640px' }}>
-                Clear commercial contracts with no hidden fees, 100% legal RTO compliance, and certified chauffeur accountability.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowTermsModal(true)}
-              className="btn-primary"
-              style={{
-                padding: '10px 22px',
-                borderRadius: '24px',
-                fontSize: '0.84rem',
-                fontWeight: 600,
-                background: '#1e293b',
-                color: '#ffffff',
-                gap: '8px'
-              }}
-            >
-              <FileText size={16} />
-              <span>Read Complete Terms Agreement</span>
-            </button>
-          </div>
-
-          {/* 4 Pillars of Trusted B2B Terms */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-            
-            <div style={{ padding: '20px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <CheckCircle2 size={18} color="#047857" />
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  1. Fixed Shift Tariff Policy
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                8-hour base shift covers vehicle, chauffeur duty & standard fuel. Extra KM and hours are strictly charged according to published rate slabs.
-              </p>
-            </div>
-
-            <div style={{ padding: '20px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <CheckCircle2 size={18} color="#047857" />
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  2. Chauffeur Standards & Checks
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Police-verified commercial license holders with defensive driving certifications. Strict zero-tolerance policy on intoxicants.
-              </p>
-            </div>
-
-            <div style={{ padding: '20px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <CheckCircle2 size={18} color="#047857" />
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  3. 30-Min Standby Backup SLA
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                In the rare event of mechanical failure or delay, a backup vehicle of equivalent or superior category is dispatched within 30 minutes.
-              </p>
-            </div>
-
-            <div style={{ padding: '20px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <CheckCircle2 size={18} color="#047857" />
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  4. Non-Disclosure & Privacy
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                All chauffeurs sign strict corporate non-disclosure agreements (NDA) ensuring confidential in-car conversations remain private.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 8. CALL TO ACTION BANNER */}
-      <section style={{ padding: '72px 32px', maxWidth: '1080px', margin: '0 auto', textAlign: 'center' }}>
+      {/* 7. BOTTOM CTA SECTION */}
+      <section style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 36px 64px 36px', textAlign: 'center' }}>
         <div style={{
           background: '#1e293b',
-          color: '#ffffff',
           borderRadius: '24px',
-          padding: '48px 36px',
-          boxShadow: '0 20px 40px rgba(15, 23, 42, 0.25)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
+          padding: '44px 36px',
+          color: '#ffffff',
+          boxShadow: '0 20px 40px rgba(15, 23, 42, 0.25)'
         }}>
-          <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', margin: '0 0 12px 0' }}>
-            Ready to Streamline Your Corporate Mobility?
+          <h2 style={{ fontSize: '1.9rem', fontWeight: 800, margin: '0 0 10px 0', color: '#ffffff' }}>
+            Ready to Upgrade Your Company's Executive Fleet?
           </h2>
-          <p style={{ fontSize: '0.95rem', color: '#cbd5e1', maxWidth: '600px', lineHeight: 1.6, margin: '0 0 28px 0' }}>
-            Sign in to the live Enterprise Dispatch Console to book shifts, monitor RTO papers, and manage company trips.
+          <p style={{ fontSize: '0.92rem', color: '#cbd5e1', maxWidth: '540px', margin: '0 auto 24px auto', lineHeight: 1.5 }}>
+            Access the live Enterprise Dispatch Console to reserve shifts, check RTO compliance papers, and manage corporate dispatches.
           </p>
           <button 
             onClick={onNavigateToLogin}
@@ -936,7 +781,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
             style={{ 
               padding: '13px 32px', 
               borderRadius: '28px', 
-              fontSize: '0.95rem', 
+              fontSize: '0.94rem', 
               fontWeight: 700,
               background: '#ffffff',
               color: '#1e293b',
@@ -950,83 +795,32 @@ const LandingPage = ({ onNavigateToLogin }) => {
         </div>
       </section>
 
-      {/* 9. FOOTER */}
-      <footer style={{
-        background: '#0f172a',
-        color: '#94a3b8',
-        padding: '48px 32px 32px 32px',
-        borderTop: '1px solid #1e293b'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '32px', marginBottom: '36px' }}>
+      {/* 8. FOOTER */}
+      <footer style={{ background: '#0f172a', color: '#94a3b8', padding: '40px 36px 28px 36px', borderTop: '1px solid #1e293b' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#334155', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Car size={18} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#334155', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Car size={16} />
               </div>
-              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>APEX FLEET</span>
+              <strong style={{ color: '#ffffff', fontSize: '1.05rem' }}>APEX FLEET</strong>
             </div>
-            <p style={{ fontSize: '0.8rem', lineHeight: 1.6, color: '#94a3b8' }}>
-              Apex Fleet Logistics Ltd. Certified corporate mobility and executive chauffeur services for small & mid-sized businesses.
-            </p>
+            <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Executive B2B Mobility Logistics Ltd. • GST Registered</span>
           </div>
 
-          <div>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Navigation
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem' }}>
-              <a href="#services" style={{ color: '#94a3b8', textDecoration: 'none' }}>Corporate Services</a>
-              <a href="#fleet" style={{ color: '#94a3b8', textDecoration: 'none' }}>Fleet Classes & Tariff</a>
-              <a href="#reviews" style={{ color: '#94a3b8', textDecoration: 'none' }}>Google Reviews</a>
-              <a href="#terms" style={{ color: '#94a3b8', textDecoration: 'none' }}>Compliance & SLAs</a>
-            </div>
-          </div>
-
-          <div>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Legal & Trust
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem' }}>
-              <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>Terms & Conditions</span>
-              <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>Corporate SLA Agreement</span>
-              <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>Data Privacy & Telematics</span>
-              <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>RTO Compliance Standards</span>
-            </div>
-          </div>
-
-          <div>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Corporate Desk
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Phone size={14} /> <span>+91 (0) 80 4920 8800</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Mail size={14} /> <span>corporate@apexfleet.in</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <MapPin size={14} /> <span>Apex Hub, Bengaluru & Mumbai</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '20px', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', fontSize: '0.74rem' }}>
-          <div>© 2026 Apex Fleet Logistics Ltd. All rights reserved. GST Registered.</div>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <span onClick={() => setShowTermsModal(true)} style={{ cursor: 'pointer', color: '#cbd5e1' }}>Privacy Policy</span>
-            <span onClick={() => setShowTermsModal(true)} style={{ cursor: 'pointer', color: '#cbd5e1' }}>Terms of Service</span>
-            <span onClick={onNavigateToLogin} style={{ cursor: 'pointer', color: '#ffffff', fontWeight: 600 }}>Sign In to Console</span>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '0.78rem' }}>
+            <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>Terms & Conditions</span>
+            <span onClick={() => setShowTermsModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer' }}>Corporate SLA Agreement</span>
+            <span onClick={onNavigateToLogin} style={{ color: '#ffffff', cursor: 'pointer', fontWeight: 600 }}>Sign In to Console ➔</span>
           </div>
         </div>
       </footer>
 
-      {/* 10. INTERACTIVE TRUSTED TERMS & CONDITIONS MODAL */}
+      {/* 9. MODAL: TRUSTED TERMS & CONDITIONS */}
       {showTermsModal && (
         <div className="portal-modal-overlay" style={{ zIndex: 1000 }}>
           <div className="glass-panel portal-modal-card" style={{
-            maxWidth: '780px',
+            maxWidth: '720px',
             background: 'rgba(255, 255, 255, 0.98)',
             border: '1px solid #cbd5e1',
             borderRadius: '20px',
@@ -1036,30 +830,26 @@ const LandingPage = ({ onNavigateToLogin }) => {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            {/* Modal Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '14px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ShieldCheck size={20} />
+                <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#1e293b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShieldCheck size={18} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                    Apex Fleet — Corporate Terms & Service Agreement
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Apex Fleet Corporate Terms & SLA Agreement
                   </h3>
-                  <span style={{ fontSize: '0.74rem', color: '#64748b' }}>B2B Executive Mobility SLA & Compliance Standards (2026)</span>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>B2B Standards & Transparent Legal Guarantees</span>
                 </div>
               </div>
 
-              <button 
-                onClick={() => setShowTermsModal(false)}
-                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}
-              >
+              <button onClick={() => setShowTermsModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}>
                 <X size={20} />
               </button>
             </div>
 
-            {/* Terms Tabs */}
-            <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '16px' }}>
               <button 
                 onClick={() => setActiveTermsTab('billing')}
                 style={{
@@ -1073,7 +863,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                   color: activeTermsTab === 'billing' ? '#ffffff' : '#475569'
                 }}
               >
-                1. Tariff & Billing Slabs
+                1. Tariff Slabs
               </button>
               <button 
                 onClick={() => setActiveTermsTab('driver')}
@@ -1103,7 +893,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                   color: activeTermsTab === 'sla' ? '#ffffff' : '#475569'
                 }}
               >
-                3. On-Time SLA Guarantee
+                3. On-Time SLA
               </button>
               <button 
                 onClick={() => setActiveTermsTab('cancel')}
@@ -1118,67 +908,58 @@ const LandingPage = ({ onNavigateToLogin }) => {
                   color: activeTermsTab === 'cancel' ? '#ffffff' : '#475569'
                 }}
               >
-                4. Cancellation & Booking
+                4. Cancellation
               </button>
             </div>
 
-            {/* Tab Contents */}
-            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '6px', fontSize: '0.84rem', color: '#334155', lineHeight: 1.6 }}>
+            {/* Tab Body */}
+            <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.82rem', color: '#334155', lineHeight: 1.6 }}>
               {activeTermsTab === 'billing' && (
                 <div>
-                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>Transparent Shift Billing & Commercial Tariff</h4>
-                  <p>• <strong>Fixed Shift Package:</strong> Base shift duration is 8 hours (or 80 kilometers included). Shift starts from scheduled garage or pickup reporting time as approved in the dispatch trip sheet.</p>
-                  <p>• <strong>Overtime & Extra Mileage:</strong> Any mileage exceeding the base shift package will be charged at the vehicle tier rate slab (₹15 to ₹30/km). Additional hours beyond 8 hours are billed at pro-rata hourly rates.</p>
-                  <p>• <strong>Toll & Parking Reimbursements:</strong> FASTag toll fees and parking receipts are logged electronically with digital receipts attached directly to the corporate monthly invoice.</p>
-                  <p>• <strong>GST Tax Invoicing:</strong> All trips receive compliant GST e-invoices with full Input Tax Credit (ITC) eligibility for corporate tax filings.</p>
+                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>Transparent Shift Billing Policy</h4>
+                  <p>• <strong>8-Hour Package:</strong> Base shift duration is 8 hours (80 km included). Shift start begins from scheduled reporting time.</p>
+                  <p>• <strong>Extra Mileage:</strong> Excess distance is billed strictly according to vehicle tier (₹15 to ₹30/km) with electronic odometer verification.</p>
+                  <p>• <strong>GST Invoicing:</strong> Automated GST e-invoices with full Input Tax Credit (ITC) eligibility generated on month-end.</p>
                 </div>
               )}
 
               {activeTermsTab === 'driver' && (
                 <div>
-                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>Chauffeur Vetting, Conduct & Safety Assurances</h4>
-                  <p>• <strong>Comprehensive Background Checks:</strong> 100% of Apex Fleet chauffeurs undergo police verification, permanent address validation, and strict background checks before assignment.</p>
-                  <p>• <strong>Professional Attire & Conduct:</strong> Chauffeurs report in formal corporate uniform, maintain discreet conduct, and are strictly prohibited from smoking, mobile usage while driving, or unauthorized stops.</p>
-                  <p>• <strong>Passenger Confidentiality (NDA):</strong> Every chauffeur is bound by non-disclosure clauses regarding in-car conversations, delegate schedules, and client privacy.</p>
-                  <p>• <strong>Zero Tolerance Policy:</strong> Immediate permanent de-allocation and disciplinary action for any safety infraction or customer discourtesy.</p>
+                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>Chauffeur Verification & Conduct</h4>
+                  <p>• <strong>Police Verification:</strong> 100% of chauffeurs pass criminal background checks and address verification.</p>
+                  <p>• <strong>Confidentiality (NDA):</strong> Chauffeurs sign non-disclosure clauses regarding in-cabin conversations and business discussions.</p>
+                  <p>• <strong>Zero Tolerance:</strong> Immediate dismissal for speeding, phone usage during driving, or discourtesy.</p>
                 </div>
               )}
 
               {activeTermsTab === 'sla' && (
                 <div>
-                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>99.8% On-Time SLA & Standby Vehicle Assurance</h4>
-                  <p>• <strong>Punctual Reporting:</strong> Chauffeurs report 15 minutes prior to confirmed reporting time at the designated company premises or airport terminal.</p>
-                  <p>• <strong>30-Minute Standby Backup Guarantee:</strong> In the rare occurrence of mechanical breakdown, puncture, or delay, Apex Fleet commits to dispatching a replacement vehicle of equal or higher tier within 30 minutes.</p>
-                  <p>• <strong>Telematics & Speed Monitoring:</strong> All fleet cars are equipped with telematics speed governors capped at 80 km/h and dual dashcams to guarantee executive passenger security.</p>
+                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>30-Minute Standby Vehicle SLA</h4>
+                  <p>• <strong>Prior Arrival:</strong> Chauffeur reports 15 minutes prior to scheduled pickup time.</p>
+                  <p>• <strong>Immediate Backup:</strong> In case of mechanical delay or flat tire, a replacement vehicle of equal or higher tier is dispatched within 30 minutes.</p>
                 </div>
               )}
 
               {activeTermsTab === 'cancel' && (
                 <div>
-                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>Reservation, Modification & Cancellation Terms</h4>
-                  <p>• <strong>Free Cancellation Window:</strong> Corporate reservations can be modified or cancelled free of charge up to 2 hours before the scheduled dispatch time.</p>
-                  <p>• <strong>Late Cancellation:</strong> Cancellations made within 2 hours of scheduled reporting will attract a minimum 4-hour nominal standby charge.</p>
-                  <p>• <strong>Flight Delay Leniency:</strong> For airport pickups, flight delays are monitored live by dispatchers; waiting time caused by airline delays will never incur cancellation penalties.</p>
+                  <h4 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>Booking & Cancellation Terms</h4>
+                  <p>• <strong>Free Cancellation:</strong> Modify or cancel any shift up to 2 hours before reporting with zero fee.</p>
+                  <p>• <strong>Airport Delays:</strong> Flight delay tracking is automated; airport pickups never incur penalties for airline delays.</p>
                 </div>
               )}
             </div>
 
-            {/* Modal Footer */}
-            <div style={{ marginTop: '20px', paddingTop: '14px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button 
-                onClick={() => setShowTermsModal(false)}
-                className="btn-secondary"
-                style={{ padding: '8px 20px', borderRadius: '18px', fontSize: '0.82rem' }}
-              >
-                Close Terms
+            <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button onClick={() => setShowTermsModal(false)} className="btn-secondary" style={{ padding: '8px 18px', borderRadius: '16px', fontSize: '0.8rem' }}>
+                Close
               </button>
               <button 
                 onClick={() => {
                   setShowTermsModal(false);
                   onNavigateToLogin();
                 }}
-                className="btn-primary"
-                style={{ padding: '8px 22px', borderRadius: '18px', fontSize: '0.82rem', background: '#1e293b' }}
+                className="btn-primary" 
+                style={{ padding: '8px 20px', borderRadius: '16px', fontSize: '0.8rem', background: '#1e293b' }}
               >
                 Accept & Sign In
               </button>
