@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'apps.authentication',
     'apps.fleet',
     'apps.drivers',
+    'apps.dispatches',
 ]
 
 MIDDLEWARE = [

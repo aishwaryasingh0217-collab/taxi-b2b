@@ -20,7 +20,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'vehicles', label: 'Fleet Vehicles', icon: Car, badge: null, phase: 1 },
     { id: 'drivers', label: 'Driver Operations', icon: Users, badge: null, phase: 1 },
     { id: 'compliance', label: 'Compliance Vault', icon: FileCheck, badge: null, phase: 1 },
-    { id: 'dispatches', label: 'B2B Dispatches', icon: Briefcase, badge: 'Phase 3', phase: 3 },
+    { id: 'dispatches', label: 'B2B Dispatches', icon: Briefcase, badge: null, phase: 1 },
     { id: 'settlements', label: 'Financials', icon: DollarSign, badge: 'Phase 3', phase: 3 },
     { id: 'telematics', label: 'Live Telematics', icon: MapPin, badge: 'Phase 4', phase: 4 },
   ];

@@ -7,6 +7,7 @@ import DashboardOverview from './pages/DashboardOverview';
 import VehicleManagement from './pages/VehicleManagement';
 import DriverDirectory from './pages/DriverDirectory';
 import ComplianceVault from './pages/ComplianceVault';
+import B2BDispatches from './pages/B2BDispatches';
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ const MainLayout = () => {
       case 'vehicles': return 'Fleet Vehicle Registry';
       case 'drivers': return 'Driver Roster & Operations';
       case 'compliance': return 'Vehicle Compliance Vault';
+      case 'dispatches': return 'B2B Dispatches & Operations Console';
       default: return 'Fleet Control Center';
     }
   };
@@ -35,6 +37,7 @@ const MainLayout = () => {
         {activeTab === 'vehicles' && <VehicleManagement />}
         {activeTab === 'drivers' && <DriverDirectory />}
         {activeTab === 'compliance' && <ComplianceVault />}
+        {activeTab === 'dispatches' && <B2BDispatches />}
       </div>
     </div>
   );

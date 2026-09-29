@@ -6,4 +6,5 @@ urlpatterns = [
     path('api/auth/', include('apps.authentication.urls')),
     path('api/fleet/', include('apps.fleet.urls')),
     path('api/drivers/', include('apps.drivers.urls')),
+    path('api/dispatches/', include('apps.dispatches.urls')),
 ]
