@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Vehicle, VehicleCompliance
@@ -24,6 +24,42 @@ class VehicleViewSet(viewsets.ModelViewSet):
             'available': available,
             'on_duty': on_duty,
             'in_maintenance': in_maintenance
+        })
+
+    @action(detail=True, methods=['post'])
+    def assign_driver(self, request, pk=None):
+        vehicle = self.get_object()
+        driver_id = request.data.get('driver_id')
+        if not driver_id:
+            return Response({'error': 'driver_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.drivers.models import DriverProfile
+        try:
+            driver = DriverProfile.objects.get(pk=driver_id)
+        except DriverProfile.DoesNotExist:
+            return Response({'error': 'Driver profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Unassign any previously assigned driver from this vehicle
+        DriverProfile.objects.filter(assigned_vehicle=vehicle).exclude(pk=driver.pk).update(assigned_vehicle=None)
+
+        # Assign this driver to this vehicle
+        driver.assigned_vehicle = vehicle
+        driver.save(update_fields=['assigned_vehicle'])
+
+        return Response({
+            'message': f"Driver {driver.user.get_full_name() or driver.user.username} successfully assigned to {vehicle.registration_number}",
+            'vehicle': VehicleSerializer(vehicle).data
+        })
+
+    @action(detail=True, methods=['post'])
+    def unassign_driver(self, request, pk=None):
+        vehicle = self.get_object()
+        from apps.drivers.models import DriverProfile
+        unassigned_count = DriverProfile.objects.filter(assigned_vehicle=vehicle).update(assigned_vehicle=None)
+        
+        return Response({
+            'message': f"Unassigned {unassigned_count} driver(s) from {vehicle.registration_number}",
+            'vehicle': VehicleSerializer(vehicle).data
         })
 
 class VehicleComplianceViewSet(viewsets.ModelViewSet):

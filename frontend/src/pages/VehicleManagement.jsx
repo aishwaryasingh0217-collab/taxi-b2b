@@ -6,7 +6,7 @@ import {
   ShieldAlert, X, Eye, Calendar, FileText, Wrench, ShieldCheck, UserCheck, 
   LayoutGrid, Table, Zap, Crown, Bus, ChevronLeft, ChevronRight, Star, User,
   ArrowLeft, Check, Radio, Navigation, Camera, Layers, Sparkles, DollarSign, Settings,
-  UploadCloud, Trash2, Image as ImageIcon
+  UploadCloud, Trash2, Image as ImageIcon, UserPlus, UserMinus
 } from 'lucide-react';
 
 const AVAILABLE_FEATURES = [
@@ -114,6 +114,14 @@ const VehicleManagement = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // Driver Assignment State
+  const [showAssignDriverModal, setShowAssignDriverModal] = useState(false);
+  const [availableDrivers, setAvailableDrivers] = useState([]);
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+  const [driverSearchQuery, setDriverSearchQuery] = useState('');
+  const [selectedDriverIdToAssign, setSelectedDriverIdToAssign] = useState(null);
+  const [assignmentSubmitting, setAssignmentSubmitting] = useState(false);
+
   // Category horizontal scroll refs
   const scrollRefs = useRef({});
 
@@ -137,6 +145,56 @@ const VehicleManagement = () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
+
+  const handleOpenAssignDriverModal = async () => {
+    setShowAssignDriverModal(true);
+    setSelectedDriverIdToAssign(null);
+    setDriverSearchQuery('');
+    setLoadingDrivers(true);
+    try {
+      const res = await api.get('drivers/drivers/');
+      setAvailableDrivers(res.data.results || res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch drivers for assignment:', err);
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
+  const handleConfirmDriverAssignment = async () => {
+    if (!selectedDriverIdToAssign || !selectedVehicle) return;
+    setAssignmentSubmitting(true);
+    try {
+      const res = await api.post(`fleet/vehicles/${selectedVehicle.id}/assign_driver/`, {
+        driver_id: selectedDriverIdToAssign
+      });
+      setShowAssignDriverModal(false);
+      if (res.data?.vehicle) {
+        setSelectedVehicle(res.data.vehicle);
+      }
+      fetchVehicles();
+    } catch (err) {
+      alert('Error assigning driver: ' + JSON.stringify(err.response?.data || err.message));
+    } finally {
+      setAssignmentSubmitting(false);
+    }
+  };
+
+  const handleUnassignDriver = async () => {
+    if (!selectedVehicle) return;
+    if (!window.confirm(`Are you sure you want to unassign the driver from vehicle ${selectedVehicle.registration_number}?`)) {
+      return;
+    }
+    try {
+      const res = await api.post(`fleet/vehicles/${selectedVehicle.id}/unassign_driver/`);
+      if (res.data?.vehicle) {
+        setSelectedVehicle(res.data.vehicle);
+      }
+      fetchVehicles();
+    } catch (err) {
+      alert('Error unassigning driver: ' + JSON.stringify(err.response?.data || err.message));
+    }
+  };
 
   const handleOpenVehicle = (v) => {
     setSelectedVehicle(v);
@@ -413,7 +471,9 @@ const VehicleManagement = () => {
       : [selectedVehicle.image_url].filter(Boolean);
 
     const activePhotoUrl = galleryList[activePhotoIndex] || selectedVehicle.image_url;
-    const angleLabels = ['Front View (Main)', 'Side Profile', 'Rear Angle', 'Interio    return (
+    const angleLabels = ['Front View (Main)', 'Side Profile', 'Rear Angle', 'Interior Cabin', 'Boot Space', 'Wheel Detail'];
+
+    return (
       <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: '28px', background: 'var(--bg-primary)', minHeight: '100vh' }}>
         
         {/* Full Screen Top Navigation Header */}
@@ -696,24 +756,98 @@ const VehicleManagement = () => {
 
             {/* Driver Assignment Card */}
             <div className="md3-card" style={{ padding: '26px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <UserCheck size={20} color="var(--color-info)" />
-                <span>Assigned Fleet Driver</span>
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <UserCheck size={20} color="var(--color-info)" />
+                  <span>Assigned Fleet Driver</span>
+                </h3>
+                {selectedVehicle.current_driver && selectedVehicle.current_driver.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleOpenAssignDriverModal}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '16px' }}
+                  >
+                    Change Driver
+                  </button>
+                )}
+              </div>
 
               {selectedVehicle.current_driver && selectedVehicle.current_driver.length > 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0b57d0', fontWeight: 700 }}>
-                    {selectedVehicle.current_driver[0].user_detail?.username?.[0]?.toUpperCase() || 'D'}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                    {selectedVehicle.current_driver[0].avatar_url ? (
+                      <img
+                        src={selectedVehicle.current_driver[0].avatar_url}
+                        alt={selectedVehicle.current_driver[0].user_detail?.first_name || 'Driver'}
+                        style={{ width: '46px', height: '46px', borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0b57d0', fontWeight: 700, fontSize: '1.1rem' }}>
+                        {(selectedVehicle.current_driver[0].user_detail?.first_name?.[0] || selectedVehicle.current_driver[0].user_detail?.username?.[0] || 'D').toUpperCase()}
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '4px' }}>
+                        <strong style={{ color: 'var(--text-main)', fontSize: '0.98rem' }}>
+                          {selectedVehicle.current_driver[0].user_detail?.first_name 
+                            ? `${selectedVehicle.current_driver[0].user_detail.first_name} ${selectedVehicle.current_driver[0].user_detail.last_name || ''}`
+                            : selectedVehicle.current_driver[0].user_detail?.username}
+                        </strong>
+                        <span className="badge badge-success" style={{ fontSize: '0.72rem', padding: '3px 8px' }}>
+                          {selectedVehicle.current_driver[0].duty_status_display || selectedVehicle.current_driver[0].duty_status}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '3px' }}>
+                        License: <span className="font-mono">{selectedVehicle.current_driver[0].license_number}</span>
+                        {selectedVehicle.current_driver[0].badge_number && ` • Badge: ${selectedVehicle.current_driver[0].badge_number}`}
+                      </p>
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+                        <span>⭐ {selectedVehicle.current_driver[0].rating} ★</span>
+                        <span>🛡️ {selectedVehicle.current_driver[0].safety_score}/100 Safety</span>
+                        {selectedVehicle.current_driver[0].user_detail?.phone_number && (
+                          <span>📞 {selectedVehicle.current_driver[0].user_detail.phone_number}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <strong style={{ color: 'var(--text-main)', fontSize: '0.95rem' }}>{selectedVehicle.current_driver[0].user_detail?.first_name} {selectedVehicle.current_driver[0].user_detail?.last_name}</strong>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>License: {selectedVehicle.current_driver[0].license_number}</p>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={handleUnassignDriver}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        color: 'var(--color-danger)',
+                        borderRadius: '16px',
+                        padding: '6px 14px',
+                        fontSize: '0.78rem',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      Unassign Driver
+                    </button>
                   </div>
                 </div>
               ) : (
-                <div style={{ padding: '16px', background: 'var(--md-surface-container-low)', borderRadius: '10px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-                  No active driver currently assigned.
+                <div style={{ padding: '22px 16px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px dashed var(--border-color)', textAlign: 'center' }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginBottom: '14px' }}>
+                    No active driver currently assigned to this vehicle.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleOpenAssignDriverModal}
+                    className="btn-primary"
+                    style={{ fontSize: '0.85rem', padding: '8px 20px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <UserPlus size={16} />
+                    <span>Assign Driver</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -1830,6 +1964,179 @@ const VehicleManagement = () => {
               </div>
 
             </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* DRIVER ASSIGNMENT MODAL (Material Design 3 Dialog) */}
+      {showAssignDriverModal && createPortal(
+        <div className="portal-modal-overlay" onClick={() => setShowAssignDriverModal(false)}>
+          <div 
+            className="md3-card portal-modal-card" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              maxWidth: '680px',
+              padding: '32px',
+              borderRadius: '28px'
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserPlus size={22} color="#0b57d0" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.01em' }}>
+                    Assign Driver to Vehicle
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                    {selectedVehicle?.make} {selectedVehicle?.model} • <span className="font-mono">{selectedVehicle?.registration_number}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAssignDriverModal(false)}
+                className="btn-secondary"
+                style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Search Filter */}
+            <div style={{ marginBottom: '18px' }}>
+              <div className="search-box" style={{ background: 'var(--md-surface-container)', borderRadius: '24px' }}>
+                <Search size={18} color="var(--text-muted)" />
+                <input
+                  type="text"
+                  placeholder="Search driver by name, license number, or badge..."
+                  value={driverSearchQuery}
+                  onChange={(e) => setDriverSearchQuery(e.target.value)}
+                  style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', fontSize: '0.9rem', padding: '10px 4px' }}
+                />
+              </div>
+            </div>
+
+            {/* Drivers List */}
+            <div style={{ maxHeight: '380px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px', marginBottom: '24px' }}>
+              {loadingDrivers ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  Loading available drivers roster...
+                </div>
+              ) : availableDrivers.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-dim)', background: 'var(--md-surface-container-low)', borderRadius: '12px' }}>
+                  No drivers found.
+                </div>
+              ) : (
+                availableDrivers
+                  .filter((d) => {
+                    const name = `${d.user_detail?.first_name || ''} ${d.user_detail?.last_name || ''} ${d.user_detail?.username || ''}`.toLowerCase();
+                    const q = driverSearchQuery.toLowerCase();
+                    return name.includes(q) || d.license_number?.toLowerCase().includes(q) || d.badge_number?.toLowerCase().includes(q);
+                  })
+                  .map((d) => {
+                    const isSelected = selectedDriverIdToAssign === d.id;
+                    const isCurrentlyThisVehicle = selectedVehicle?.current_driver?.[0]?.id === d.id;
+                    const isAssignedToOther = d.assigned_vehicle && d.assigned_vehicle !== selectedVehicle?.id;
+                    const driverName = d.user_detail?.first_name ? `${d.user_detail.first_name} ${d.user_detail.last_name || ''}` : d.user_detail?.username;
+
+                    return (
+                      <div
+                        key={d.id}
+                        onClick={() => setSelectedDriverIdToAssign(d.id)}
+                        style={{
+                          padding: '14px 18px',
+                          borderRadius: '16px',
+                          border: isSelected ? '2px solid #0b57d0' : '1px solid var(--border-color)',
+                          background: isSelected ? 'var(--accent-primary-container)' : 'var(--md-surface-container-low)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '14px',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                          {d.avatar_url ? (
+                            <img
+                              src={d.avatar_url}
+                              alt={driverName}
+                              style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0b57d0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.95rem' }}>
+                              {(d.user_detail?.first_name?.[0] || d.user_detail?.username?.[0] || 'D').toUpperCase()}
+                            </div>
+                          )}
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <strong style={{ color: 'var(--text-main)', fontSize: '0.94rem' }}>{driverName}</strong>
+                              {isCurrentlyThisVehicle && (
+                                <span className="badge badge-info" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>Currently Assigned</span>
+                              )}
+                              {isAssignedToOther && (
+                                <span className="badge badge-warning" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>Paired elsewhere</span>
+                              )}
+                            </div>
+                            <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                              Lic: <span className="font-mono">{d.license_number}</span> • Duty: {d.duty_status_display || d.duty_status}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                          <div style={{ textAlign: 'right', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                            <div>🛡️ {d.safety_score}/100</div>
+                            <div>⭐ {d.rating} ★</div>
+                          </div>
+                          <div style={{
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            border: isSelected ? '6px solid #0b57d0' : '2px solid var(--border-color)',
+                            background: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }} />
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+
+            {/* Modal Footer Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '18px' }}>
+              <button
+                type="button"
+                onClick={() => setShowAssignDriverModal(false)}
+                className="btn-secondary"
+                style={{ borderRadius: '24px', padding: '10px 22px' }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={!selectedDriverIdToAssign || assignmentSubmitting}
+                onClick={handleConfirmDriverAssignment}
+                className="btn-primary"
+                style={{
+                  borderRadius: '24px',
+                  padding: '10px 26px',
+                  opacity: (!selectedDriverIdToAssign || assignmentSubmitting) ? 0.6 : 1,
+                  cursor: (!selectedDriverIdToAssign || assignmentSubmitting) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {assignmentSubmitting ? 'Assigning Driver...' : 'Confirm Assignment'}
+              </button>
+            </div>
           </div>
         </div>,
         document.body

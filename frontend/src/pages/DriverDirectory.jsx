@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../services/api';
 import { 
   Users, Search, Shield, Award, Car, CheckCircle2, Clock, 
-  ArrowLeft, Phone, Mail, BadgeCheck, Activity, UserCheck, Eye
+  ArrowLeft, Phone, Mail, BadgeCheck, Activity, UserCheck, Eye,
+  Plus, X, Check, Fuel, Gauge, Zap
 } from 'lucide-react';
 
 const DriverDirectory = () => {
@@ -13,6 +15,15 @@ const DriverDirectory = () => {
   
   // Selected driver for Full Screen / Detailed View
   const [selectedDriver, setSelectedDriver] = useState(null);
+
+  // Vehicle Assignment State
+  const [showAssignVehicleModal, setShowAssignVehicleModal] = useState(false);
+  const [targetDriverForVehicle, setTargetDriverForVehicle] = useState(null);
+  const [availableVehicles, setAvailableVehicles] = useState([]);
+  const [loadingVehicles, setLoadingVehicles] = useState(false);
+  const [vehicleSearchQuery, setVehicleSearchQuery] = useState('');
+  const [selectedVehicleIdToAssign, setSelectedVehicleIdToAssign] = useState(null);
+  const [vehicleAssignmentSubmitting, setVehicleAssignmentSubmitting] = useState(false);
 
   const fetchDrivers = async () => {
     setLoading(true);
@@ -34,6 +45,65 @@ const DriverDirectory = () => {
   useEffect(() => {
     fetchDrivers();
   }, []);
+
+  const handleOpenAssignVehicleModal = async (driver) => {
+    const d = driver || selectedDriver;
+    setTargetDriverForVehicle(d);
+    setShowAssignVehicleModal(true);
+    setSelectedVehicleIdToAssign(null);
+    setVehicleSearchQuery('');
+    setLoadingVehicles(true);
+    try {
+      const res = await api.get('fleet/vehicles/');
+      setAvailableVehicles(res.data.results || res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch vehicles for assignment:', err);
+    } finally {
+      setLoadingVehicles(false);
+    }
+  };
+
+  const handleConfirmVehicleAssignment = async () => {
+    const driver = targetDriverForVehicle || selectedDriver;
+    if (!selectedVehicleIdToAssign || !driver) return;
+    setVehicleAssignmentSubmitting(true);
+    try {
+      const res = await api.post(`drivers/drivers/${driver.id}/assign_vehicle/`, {
+        vehicle_id: selectedVehicleIdToAssign
+      });
+      setShowAssignVehicleModal(false);
+      if (res.data?.driver) {
+        if (selectedDriver && selectedDriver.id === driver.id) {
+          setSelectedDriver(res.data.driver);
+        }
+      }
+      fetchDrivers();
+    } catch (err) {
+      alert('Error assigning vehicle: ' + JSON.stringify(err.response?.data || err.message));
+    } finally {
+      setVehicleAssignmentSubmitting(false);
+    }
+  };
+
+  const handleUnassignVehicle = async (driver) => {
+    const d = driver || selectedDriver;
+    if (!d) return;
+    const vehicleReg = d.vehicle_detail?.registration_number || 'the assigned vehicle';
+    if (!window.confirm(`Are you sure you want to unassign ${vehicleReg} from driver ${d.user_detail?.first_name || d.user_detail?.username}?`)) {
+      return;
+    }
+    try {
+      const res = await api.post(`drivers/drivers/${d.id}/unassign_vehicle/`);
+      if (res.data?.driver) {
+        if (selectedDriver && selectedDriver.id === d.id) {
+          setSelectedDriver(res.data.driver);
+        }
+      }
+      fetchDrivers();
+    } catch (err) {
+      alert('Error unassigning vehicle: ' + JSON.stringify(err.response?.data || err.message));
+    }
+  };
 
   const handleDutyStatusChange = async (driverId, newStatus) => {
     try {
@@ -64,6 +134,193 @@ const DriverDirectory = () => {
       default:
         return <span className="badge badge-info">{status}</span>;
     }
+  };
+
+  const renderAssignVehicleModal = () => {
+    if (!showAssignVehicleModal) return null;
+    const driver = targetDriverForVehicle || selectedDriver;
+    const driverName = driver?.user_detail?.first_name
+      ? `${driver.user_detail.first_name} ${driver.user_detail.last_name || ''}`
+      : driver?.user_detail?.username || 'Driver';
+
+    return createPortal(
+      <div className="portal-modal-overlay" onClick={() => setShowAssignVehicleModal(false)}>
+        <div
+          className="md3-card portal-modal-card"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            maxWidth: '720px',
+            padding: '32px',
+            borderRadius: '28px'
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Car size={24} color="#0b57d0" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.01em' }}>
+                  Assign Fleet Vehicle
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                  Assigning to driver: <strong style={{ color: 'var(--text-main)' }}>{driverName}</strong> • Badge: {driver?.badge_number || 'N/A'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowAssignVehicleModal(false)}
+              className="btn-secondary"
+              style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Search Filter */}
+          <div style={{ marginBottom: '18px' }}>
+            <div className="search-box" style={{ background: 'var(--md-surface-container)', borderRadius: '24px' }}>
+              <Search size={18} color="var(--text-muted)" />
+              <input
+                type="text"
+                placeholder="Search fleet by license plate, make, model, or class..."
+                value={vehicleSearchQuery}
+                onChange={(e) => setVehicleSearchQuery(e.target.value)}
+                style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', fontSize: '0.9rem', padding: '10px 4px' }}
+              />
+            </div>
+          </div>
+
+          {/* Vehicles List */}
+          <div style={{ maxHeight: '380px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px', marginBottom: '24px' }}>
+            {loadingVehicles ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                Loading fleet vehicles...
+              </div>
+            ) : availableVehicles.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-dim)', background: 'var(--md-surface-container-low)', borderRadius: '12px' }}>
+                No fleet vehicles found.
+              </div>
+            ) : (
+              availableVehicles
+                .filter((v) => {
+                  const q = vehicleSearchQuery.toLowerCase();
+                  return (
+                    v.registration_number?.toLowerCase().includes(q) ||
+                    v.make?.toLowerCase().includes(q) ||
+                    v.model?.toLowerCase().includes(q) ||
+                    v.vehicle_class?.toLowerCase().includes(q)
+                  );
+                })
+                .map((v) => {
+                  const isSelected = selectedVehicleIdToAssign === v.id;
+                  const isCurrentlyThisDriver = driver?.vehicle_detail?.id === v.id;
+                  const otherDriver = v.assigned_driver;
+                  const isAssignedToOther = otherDriver && otherDriver.id !== driver?.id;
+
+                  return (
+                    <div
+                      key={v.id}
+                      onClick={() => setSelectedVehicleIdToAssign(v.id)}
+                      style={{
+                        padding: '14px 18px',
+                        borderRadius: '16px',
+                        border: isSelected ? '2px solid #0b57d0' : '1px solid var(--border-color)',
+                        background: isSelected ? 'var(--accent-primary-container)' : 'var(--md-surface-container-low)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '14px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        {v.image_url ? (
+                          <img
+                            src={v.image_url}
+                            alt={v.registration_number}
+                            style={{ width: '56px', height: '40px', borderRadius: '8px', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <div style={{ width: '56px', height: '40px', borderRadius: '8px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Car size={22} color="#0b57d0" />
+                          </div>
+                        )}
+
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <strong style={{ color: 'var(--text-main)', fontSize: '0.94rem' }}>{v.make} {v.model}</strong>
+                            <span className="font-mono" style={{ color: 'var(--accent-primary)', fontSize: '0.85rem', fontWeight: 600 }}>
+                              {v.registration_number}
+                            </span>
+                            <span className="badge badge-info" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                              {v.vehicle_class_display || v.vehicle_class}
+                            </span>
+                            {isCurrentlyThisDriver && (
+                              <span className="badge badge-success" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>Currently Paired</span>
+                            )}
+                            {isAssignedToOther && (
+                              <span className="badge badge-warning" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                                Assigned to {otherDriver.full_name}
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                            Status: <span style={{ fontWeight: 600 }}>{v.status_display || v.status}</span> • Fuel: {v.fuel_type_display || v.fuel_type} • {Number(v.current_odometer).toLocaleString()} KM
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{
+                        width: '22px',
+                        height: '22px',
+                        borderRadius: '50%',
+                        border: isSelected ? '6px solid #0b57d0' : '2px solid var(--border-color)',
+                        background: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }} />
+                    </div>
+                  );
+                })
+            )}
+          </div>
+
+          {/* Modal Footer */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '18px' }}>
+            <button
+              type="button"
+              onClick={() => setShowAssignVehicleModal(false)}
+              className="btn-secondary"
+              style={{ borderRadius: '24px', padding: '10px 22px' }}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              disabled={!selectedVehicleIdToAssign || vehicleAssignmentSubmitting}
+              onClick={handleConfirmVehicleAssignment}
+              className="btn-primary"
+              style={{
+                borderRadius: '24px',
+                padding: '10px 26px',
+                opacity: (!selectedVehicleIdToAssign || vehicleAssignmentSubmitting) ? 0.6 : 1,
+                cursor: (!selectedVehicleIdToAssign || vehicleAssignmentSubmitting) ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {vehicleAssignmentSubmitting ? 'Assigning Vehicle...' : 'Confirm Assignment'}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
   };
 
   // DETAILED DRIVER PROFILE VIEW (Material Design 3)
@@ -180,38 +437,89 @@ const DriverDirectory = () => {
 
             {/* Assigned Vehicle Card */}
             <div className="md3-card" style={{ padding: '26px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Car size={20} color="var(--accent-primary)" />
-                <span>Currently Assigned Fleet Vehicle</span>
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Car size={20} color="var(--accent-primary)" />
+                  <span>Currently Assigned Fleet Vehicle</span>
+                </h3>
+                {vehicle && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenAssignVehicleModal(selectedDriver)}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.78rem', padding: '6px 14px', borderRadius: '16px' }}
+                  >
+                    Change Vehicle
+                  </button>
+                )}
+              </div>
 
               {vehicle ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '18px', padding: '18px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  {vehicle.image_url ? (
-                    <img
-                      src={vehicle.image_url}
-                      alt={vehicle.registration_number}
-                      style={{ width: '100px', height: '68px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border-color)' }}
-                    />
-                  ) : (
-                    <div style={{ width: '100px', height: '68px', borderRadius: '8px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Car size={30} color="#0b57d0" />
-                    </div>
-                  )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '18px', padding: '16px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                    {vehicle.image_url ? (
+                      <img
+                        src={vehicle.image_url}
+                        alt={vehicle.registration_number}
+                        style={{ width: '100px', height: '68px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border-color)' }}
+                      />
+                    ) : (
+                      <div style={{ width: '100px', height: '68px', borderRadius: '8px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Car size={30} color="#0b57d0" />
+                      </div>
+                    )}
 
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <strong style={{ color: 'var(--text-main)', fontSize: '1.05rem' }}>{vehicle.make} {vehicle.model}</strong>
-                      <span className="badge badge-info">{vehicle.fuel_type_display || vehicle.fuel_type}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                        <strong style={{ color: 'var(--text-main)', fontSize: '1.05rem' }}>{vehicle.make} {vehicle.model}</strong>
+                        <span className="badge badge-info">{vehicle.fuel_type_display || vehicle.fuel_type}</span>
+                      </div>
+                      <p className="font-mono" style={{ color: 'var(--accent-primary)', fontSize: '0.88rem', fontWeight: 600, marginTop: '4px' }}>
+                        Plate: {vehicle.registration_number} &nbsp;|&nbsp; Odometer: {Number(vehicle.current_odometer).toLocaleString()} KM
+                      </p>
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        <span>Class: {vehicle.vehicle_class_display || vehicle.vehicle_class}</span>
+                        <span>• Status: {vehicle.status_display || vehicle.status}</span>
+                      </div>
                     </div>
-                    <p className="font-mono" style={{ color: 'var(--accent-primary)', fontSize: '0.88rem', fontWeight: 600, marginTop: '4px' }}>
-                      Plate: {vehicle.registration_number} &nbsp;|&nbsp; Odometer: {Number(vehicle.current_odometer).toLocaleString()} KM
-                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleUnassignVehicle(selectedDriver)}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        color: 'var(--color-danger)',
+                        borderRadius: '16px',
+                        padding: '6px 14px',
+                        fontSize: '0.78rem',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      Unassign Vehicle
+                    </button>
                   </div>
                 </div>
               ) : (
-                <div style={{ padding: '20px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  No vehicle currently paired. Driver is available for shift assignment.
+                <div style={{ padding: '24px 20px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px dashed var(--border-color)', textAlign: 'center' }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginBottom: '14px' }}>
+                    No vehicle currently paired. Driver is available for shift assignment.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenAssignVehicleModal(selectedDriver)}
+                    className="btn-primary"
+                    style={{ fontSize: '0.85rem', padding: '8px 20px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <Plus size={16} />
+                    <span>Assign Vehicle</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -293,6 +601,7 @@ const DriverDirectory = () => {
 
         </div>
 
+        {renderAssignVehicleModal()}
       </div>
     );
   }
@@ -430,7 +739,29 @@ const DriverDirectory = () => {
                         </strong>
                       </div>
                     ) : (
-                      <span style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>Unassigned</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenAssignVehicleModal(driver);
+                        }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: 'var(--accent-primary-container)',
+                          color: '#0b57d0',
+                          border: 'none',
+                          borderRadius: '12px',
+                          padding: '4px 10px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Plus size={12} />
+                        <span>Assign Car</span>
+                      </button>
                     )}
                   </td>
                   <td>
@@ -465,6 +796,7 @@ const DriverDirectory = () => {
         )}
       </div>
 
+      {renderAssignVehicleModal()}
     </div>
   );
 };
