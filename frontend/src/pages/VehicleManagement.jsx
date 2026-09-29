@@ -906,34 +906,47 @@ const VehicleManagement = () => {
     <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
       {/* Top Header & View Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>Vehicle Master Registry</h2>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Category-wise horizontal vehicle sliders, Indian Rupee (₹) rate slabs, and compliance vault.
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
+            Vehicle Master Registry
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', margin: 0, fontWeight: 500 }}>
+            Category-wise horizontal fleet showcase, commercial tariff slabs, and maintenance registry.
           </p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* View Switcher Toggle */}
-          <div style={{ display: 'flex', background: '#0f172a', padding: '4px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          {/* View Switcher Toggle - Google Style Segmented Control */}
+          <div style={{ 
+            display: 'flex', 
+            background: 'rgba(255, 255, 255, 0.85)', 
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            padding: '4px', 
+            borderRadius: '24px', 
+            border: '1px solid var(--border-glass)',
+            boxShadow: 'var(--elevation-1)',
+            gap: '4px'
+          }}>
             <button
               onClick={() => setViewMode('grid')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 12px',
-                borderRadius: '6px',
+                padding: '7px 16px',
+                borderRadius: '20px',
                 border: 'none',
-                background: viewMode === 'grid' ? 'var(--accent-primary)' : 'transparent',
-                color: viewMode === 'grid' ? '#fff' : 'var(--text-muted)',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                cursor: 'pointer'
+                background: viewMode === 'grid' ? '#1e293b' : 'transparent',
+                color: viewMode === 'grid' ? '#ffffff' : '#64748b',
+                fontWeight: viewMode === 'grid' ? 600 : 500,
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={15} />
               <span>Showcase Slider</span>
             </button>
             <button
@@ -942,23 +955,24 @@ const VehicleManagement = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 12px',
-                borderRadius: '6px',
+                padding: '7px 16px',
+                borderRadius: '20px',
                 border: 'none',
-                background: viewMode === 'table' ? 'var(--accent-primary)' : 'transparent',
-                color: viewMode === 'table' ? '#fff' : 'var(--text-muted)',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                cursor: 'pointer'
+                background: viewMode === 'table' ? '#1e293b' : 'transparent',
+                color: viewMode === 'table' ? '#ffffff' : '#64748b',
+                fontWeight: viewMode === 'table' ? 600 : 500,
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
-              <Table size={16} />
+              <Table size={15} />
               <span>Table View</span>
             </button>
           </div>
 
-          <button onClick={() => setShowAddModal(true)} className="btn-primary">
-            <Plus size={18} />
+          <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ padding: '10px 22px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}>
+            <Plus size={16} />
             <span>Add Vehicle</span>
           </button>
         </div>
@@ -1015,22 +1029,22 @@ const VehicleManagement = () => {
                         width: '34px',
                         height: '34px',
                         borderRadius: '10px',
-                        background: cat.bgGradient,
+                        background: cat.bgContainer || 'rgba(241, 245, 249, 0.95)',
                         display: 'flex',
                         alignItems: 'center',
                         justify: 'center'
                       }}>
-                        <CatIcon size={18} color="#fff" />
+                        <CatIcon size={18} color={cat.iconColor || '#1e293b'} />
                       </div>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
                             {cat.title}
                           </h3>
                           <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>{vehicleList.length} Vehicles</span>
                           <span className="badge badge-success" style={{ fontSize: '0.65rem' }}>{cat.rate}</span>
                         </div>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{cat.subtitle}</p>
+                        <p style={{ fontSize: '0.78rem', color: '#475569', marginTop: '3px', margin: 0, fontWeight: 500 }}>{cat.subtitle}</p>
                       </div>
                     </div>
 
@@ -1043,9 +1057,9 @@ const VehicleManagement = () => {
                           width: '32px',
                           height: '32px',
                           borderRadius: '50%',
-                          background: '#0f172a',
-                          border: '1px solid var(--border-color)',
-                          color: '#fff',
+                          background: '#ffffff',
+                          border: '1px solid #cbd5e1',
+                          color: '#1e293b',
                           display: 'flex',
                           alignItems: 'center',
                           justify: 'center',
@@ -1062,9 +1076,9 @@ const VehicleManagement = () => {
                           width: '32px',
                           height: '32px',
                           borderRadius: '50%',
-                          background: '#0f172a',
-                          border: '1px solid var(--border-color)',
-                          color: '#fff',
+                          background: '#ffffff',
+                          border: '1px solid #cbd5e1',
+                          color: '#1e293b',
                           display: 'flex',
                           alignItems: 'center',
                           justify: 'center',
@@ -1097,7 +1111,12 @@ const VehicleManagement = () => {
                         style={{
                           width: '260px',
                           flexShrink: 0,
-                          background: '#0f172a',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)',
+                          border: '1px solid rgba(226, 232, 240, 0.9)',
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                          borderRadius: '14px',
                           padding: '12px',
                           display: 'flex',
                           flexDirection: 'column',
@@ -1106,7 +1125,7 @@ const VehicleManagement = () => {
                         }}
                       >
                         {/* Vehicle Photo Container */}
-                        <div style={{ position: 'relative', height: '135px', borderRadius: '8px', overflow: 'hidden', background: '#1e293b', marginBottom: '10px' }}>
+                        <div style={{ position: 'relative', height: '138px', borderRadius: '10px', overflow: 'hidden', background: '#f1f5f9', marginBottom: '10px' }}>
                           {vehicle.image_url ? (
                             <img
                               src={vehicle.image_url}
@@ -1127,13 +1146,14 @@ const VehicleManagement = () => {
                             position: 'absolute',
                             bottom: '6px',
                             left: '6px',
-                            background: 'rgba(0,0,0,0.8)',
-                            backdropFilter: 'blur(4px)',
-                            padding: '2px 6px',
+                            background: 'rgba(15, 23, 42, 0.85)',
+                            backdropFilter: 'blur(6px)',
+                            padding: '2px 8px',
                             borderRadius: '4px',
-                            fontSize: '0.7rem',
+                            fontSize: '0.72rem',
                             fontWeight: 700,
-                            color: '#60a5fa'
+                            color: '#ffffff',
+                            letterSpacing: '0.04em'
                           }} className="font-mono">
                             {vehicle.registration_number}
                           </div>
@@ -1141,11 +1161,11 @@ const VehicleManagement = () => {
 
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
                               {vehicle.make} {vehicle.model}
                             </h4>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#fbbf24', fontSize: '0.72rem', fontWeight: 700 }}>
-                              <Star size={11} fill="#fbbf24" />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#d97706', fontSize: '0.74rem', fontWeight: 700 }}>
+                              <Star size={11} fill="#d97706" />
                               <span>4.9</span>
                             </div>
                           </div>
@@ -1156,11 +1176,11 @@ const VehicleManagement = () => {
                           </div>
                         </div>
 
-                        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem' }}>
-                          <span style={{ color: '#34d399', fontWeight: 700 }}>
-                            ₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}/shift
+                        <div style={{ borderTop: '1px solid rgba(226, 232, 240, 0.8)', paddingTop: '10px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                          <span style={{ color: '#0f172a', fontWeight: 800, fontSize: '0.82rem' }}>
+                            ₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}<span style={{ fontSize: '0.7rem', fontWeight: 500, color: '#64748b' }}>/shift</span>
                           </span>
-                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>Inspect ➔</span>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>Inspect ➔</span>
                         </div>
                       </div>
                     ))}
@@ -1232,12 +1252,12 @@ const VehicleManagement = () => {
                       </td>
                       <td>
                         <div>
-                          <strong className="font-mono" style={{ color: '#fff', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
+                          <strong className="font-mono" style={{ color: '#0f172a', fontSize: '0.9rem' }}>{vehicle.registration_number}</strong>
                           <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>VIN: {vehicle.vin}</p>
                         </div>
                       </td>
                       <td>
-                        <span style={{ color: '#fff', fontWeight: 600 }}>{vehicle.make} {vehicle.model}</span>
+                        <span style={{ color: '#0f172a', fontWeight: 600 }}>{vehicle.make} {vehicle.model}</span>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Year: {vehicle.year} ({vehicle.seating_capacity} Seats)</p>
                       </td>
                       <td>
@@ -1247,13 +1267,13 @@ const VehicleManagement = () => {
                         </div>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f8fafc' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0f172a' }}>
                           <Gauge size={14} color="var(--text-muted)" />
                           <span className="font-mono" style={{ fontWeight: 600 }}>{Number(vehicle.current_odometer).toLocaleString()} KM</span>
                         </div>
                       </td>
                       <td>
-                        <strong style={{ color: '#34d399', fontSize: '0.85rem' }}>₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}/shift</strong>
+                        <strong style={{ color: '#0f172a', fontSize: '0.88rem', fontWeight: 700 }}>₹{Number(vehicle.shift_rate_inr || 2500).toLocaleString('en-IN')}/shift</strong>
                       </td>
                       <td>{getStatusBadge(vehicle.status)}</td>
                       <td>
@@ -1296,14 +1316,15 @@ const VehicleManagement = () => {
         <div className="portal-modal-overlay">
           <div className="glass-panel portal-modal-card" style={{ 
             padding: '28px',
-            border: '1px solid rgba(255,255,255,0.15)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)'
+            background: 'rgba(255, 255, 255, 0.98)',
+            border: '1px solid rgba(226, 232, 240, 0.9)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
           }}>
             {/* Modal Title Bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
               <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Car size={22} color="#3b82f6" />
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Car size={22} color="#1e293b" />
                   <span>Add Fleet Vehicle - Detailed Entry</span>
                 </h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -1322,7 +1343,7 @@ const VehicleManagement = () => {
             <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               
               {/* SECTION 1: CORE VEHICLE IDENTIFICATION & SPECS */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Settings size={16} />
                   <span>1. Technical & Registration Specifications</span>
@@ -1454,7 +1475,7 @@ const VehicleManagement = () => {
               </div>
 
               {/* SECTION 2: VEHICLE PHOTO GALLERY */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                   <div>
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1512,7 +1533,7 @@ const VehicleManagement = () => {
                     padding: '24px',
                     borderRadius: '10px',
                     border: isDragging ? '2px dashed #38bdf8' : '2px dashed rgba(255, 255, 255, 0.15)',
-                    background: isDragging ? 'rgba(56, 189, 248, 0.1)' : '#1e293b',
+                    background: isDragging ? 'rgba(30, 41, 59, 0.05)' : '#ffffff', border: isDragging ? '2px dashed #1e293b' : '2px dashed #cbd5e1',
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
@@ -1520,7 +1541,7 @@ const VehicleManagement = () => {
                   }}
                 >
                   <UploadCloud size={36} color="#38bdf8" style={{ margin: '0 auto 8px auto' }} />
-                  <h5 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
+                  <h5 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                     Drag & Drop Car Photos Here, or <span style={{ color: '#38bdf8', textDecoration: 'underline' }}>Browse Gallery Files</span>
                   </h5>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -1529,29 +1550,29 @@ const VehicleManagement = () => {
                 </div>
 
                 {/* Mandatory & Recommended Photo Checklist Guide */}
-                <div style={{ marginBottom: uploadedPhotos.length > 0 ? '16px' : '0', padding: '12px 14px', background: '#1e293b', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <div style={{ marginBottom: uploadedPhotos.length > 0 ? '16px' : '0', padding: '12px 14px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                     <AlertCircle size={14} />
                     <span>Mandatory Photo Upload Checklist</span>
                   </span>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', fontSize: '0.73rem', color: '#e2e8f0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#1e293b' }}>
                       <CheckCircle2 size={13} color="#34d399" />
                       <span><strong>Front View</strong> (Mandatory *)</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#1e293b' }}>
                       <CheckCircle2 size={13} color="#34d399" />
                       <span><strong>Side Profile</strong> (Mandatory *)</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#1e293b' }}>
                       <CheckCircle2 size={13} color="#34d399" />
                       <span><strong>Rear View</strong> (Mandatory *)</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#0f172a', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#1e293b' }}>
                       <CheckCircle2 size={13} color="#34d399" />
                       <span><strong>Interior Cabin</strong> (Mandatory *)</span>
                     </div>
@@ -1685,7 +1706,7 @@ const VehicleManagement = () => {
               </div>
 
               {/* SECTION 3: COMMERCIAL TARIFF RATES (INR ₹) */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <DollarSign size={16} />
                   <span>3. Commercial Contract Tariff Rates (INR ₹)</span>
@@ -1717,7 +1738,7 @@ const VehicleManagement = () => {
               </div>
 
               {/* SECTION 4: TELEMATICS & AMENITIES CHECKLIST */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Navigation size={16} />
                   <span>4. Telematics Equipment & Passenger Amenities</span>
@@ -1736,9 +1757,9 @@ const VehicleManagement = () => {
                           gap: '10px',
                           padding: '8px 12px',
                           borderRadius: '8px',
-                          background: isChecked ? 'rgba(168, 85, 247, 0.15)' : '#1e293b',
-                          border: isChecked ? '1px solid #a855f7' : '1px solid var(--border-color)',
-                          color: '#fff',
+                          background: isChecked ? 'rgba(30, 41, 59, 0.06)' : '#ffffff',
+                          border: isChecked ? '1px solid #1e293b' : '1px solid #cbd5e1',
+                          color: '#1e293b',
                           fontSize: '0.8rem',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease'
@@ -1764,7 +1785,7 @@ const VehicleManagement = () => {
               </div>
 
               {/* SECTION 5: LEGAL COMPLIANCE VAULT & PROOF DOCUMENTS (RC BOOK, INSURANCE, PUC, PERMIT) */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                   <div>
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#eab308', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1910,7 +1931,7 @@ const VehicleManagement = () => {
               </div>
 
               {/* SECTION 6: DUTY STATUS & REMARKS */}
-              <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.9)', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={16} />
                   <span>6. Operational Status & Fleet Notes</span>
