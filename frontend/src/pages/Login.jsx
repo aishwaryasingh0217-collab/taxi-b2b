@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Lock, User, ArrowRight, Car } from 'lucide-react';
+import { Shield, Lock, User, ArrowRight, ArrowLeft, Car } from 'lucide-react';
 
-const Login = () => {
+const Login = ({ onBackToWebsite }) => {
   const { login, loading } = useAuth();
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
@@ -52,6 +52,32 @@ const Login = () => {
         border: '1px solid rgba(255, 255, 255, 0.75)',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
       }}>
+        {/* Back to Website Button */}
+        {onBackToWebsite && (
+          <div style={{ marginBottom: '16px' }}>
+            <button
+              type="button"
+              onClick={onBackToWebsite}
+              className="btn-secondary"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: '20px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                background: 'rgba(255, 255, 255, 0.85)',
+                border: '1px solid #cbd5e1',
+                color: '#334155',
+                cursor: 'pointer'
+              }}
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Public Website</span>
+            </button>
+          </div>
+        )}
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{

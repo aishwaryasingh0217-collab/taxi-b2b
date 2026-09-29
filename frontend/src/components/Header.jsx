@@ -1,8 +1,8 @@
 import React from 'react';
-import { Shield, Radio } from 'lucide-react';
+import { Shield, Radio, Globe } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Header = ({ title }) => {
+const Header = ({ title, onViewWebsite }) => {
   const { user } = useAuth();
 
   return (
@@ -44,6 +44,31 @@ const Header = ({ title }) => {
 
       {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* View Public Website */}
+        {onViewWebsite && (
+          <button
+            onClick={onViewWebsite}
+            className="btn-secondary"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              background: '#ffffff',
+              border: '1px solid #cbd5e1',
+              borderRadius: '20px',
+              fontSize: '0.78rem',
+              color: '#1e293b',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            title="Preview Public Marketing Website"
+          >
+            <Globe size={14} color="#1e293b" />
+            <span>Public Website</span>
+          </button>
+        )}
+
         {/* System Health */}
         <div style={{
           display: 'flex',
