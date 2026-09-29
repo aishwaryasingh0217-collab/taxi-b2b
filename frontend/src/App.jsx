@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import DashboardOverview from './pages/DashboardOverview';
 import VehicleManagement from './pages/VehicleManagement';
 import DriverDirectory from './pages/DriverDirectory';
+import ComplianceVault from './pages/ComplianceVault';
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ const MainLayout = () => {
         {activeTab === 'dashboard' && <DashboardOverview setActiveTab={setActiveTab} />}
         {activeTab === 'vehicles' && <VehicleManagement />}
         {activeTab === 'drivers' && <DriverDirectory />}
+        {activeTab === 'compliance' && <ComplianceVault />}
       </div>
     </div>
   );

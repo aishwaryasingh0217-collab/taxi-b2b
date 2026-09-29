@@ -4,10 +4,19 @@ from .models import Vehicle, VehicleCompliance
 class VehicleComplianceSerializer(serializers.ModelSerializer):
     computed_status = serializers.CharField(read_only=True)
     document_type_display = serializers.CharField(source='get_document_type_display', read_only=True)
+    vehicle_registration = serializers.CharField(source='vehicle.registration_number', read_only=True)
+    vehicle_make = serializers.CharField(source='vehicle.make', read_only=True)
+    vehicle_model = serializers.CharField(source='vehicle.model', read_only=True)
+    days_remaining = serializers.SerializerMethodField()
 
     class Meta:
         model = VehicleCompliance
         fields = '__all__'
+
+    def get_days_remaining(self, obj):
+        from django.utils import timezone
+        today = timezone.now().date()
+        return (obj.expiry_date - today).days
 
 class VehicleSerializer(serializers.ModelSerializer):
     compliance_docs = VehicleComplianceSerializer(many=True, required=False)

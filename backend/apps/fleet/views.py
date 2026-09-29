@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -66,3 +68,24 @@ class VehicleComplianceViewSet(viewsets.ModelViewSet):
     queryset = VehicleCompliance.objects.all().order_by('expiry_date')
     serializer_class = VehicleComplianceSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['document_number', 'vehicle__registration_number', 'vehicle__make', 'vehicle__model', 'issuer_authority']
+    ordering_fields = ['expiry_date', 'issue_date', 'document_type']
+
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        today = timezone.now().date()
+        in_30_days = today + timedelta(days=30)
+
+        queryset = self.get_queryset()
+        total = queryset.count()
+        expired = queryset.filter(expiry_date__lt=today).count()
+        expiring_soon = queryset.filter(expiry_date__gte=today, expiry_date__lte=in_30_days).count()
+        valid = queryset.filter(expiry_date__gt=in_30_days).count()
+
+        return Response({
+            'total_documents': total,
+            'valid': valid,
+            'expiring_soon': expiring_soon,
+            'expired': expired
+        })
