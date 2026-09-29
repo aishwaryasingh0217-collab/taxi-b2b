@@ -20,10 +20,10 @@ const MainLayout = () => {
   const getPageTitle = () => {
     switch (activeTab) {
       case 'dashboard': return 'Fleet Operations Dashboard';
-      case 'vehicles': return 'Fleet Vehicle Registry';
-      case 'drivers': return 'Driver Roster & Operations';
-      case 'compliance': return 'Vehicle Compliance Vault';
-      case 'dispatches': return 'B2B Dispatches & Operations Console';
+      case 'vehicles': return 'Fleet Cars & Vehicle Inventory';
+      case 'drivers': return 'Drivers & Chauffeurs Directory';
+      case 'compliance': return 'Car Papers & Expiry (RTO Compliance)';
+      case 'dispatches': return 'Trips & Daily Duty (B2B Dispatches)';
       default: return 'Fleet Control Center';
     }
   };

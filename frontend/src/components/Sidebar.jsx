@@ -17,12 +17,12 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null, phase: 1 },
-    { id: 'vehicles', label: 'Fleet Vehicles', icon: Car, badge: null, phase: 1 },
-    { id: 'drivers', label: 'Driver Operations', icon: Users, badge: null, phase: 1 },
-    { id: 'compliance', label: 'Compliance Vault', icon: FileCheck, badge: null, phase: 1 },
-    { id: 'dispatches', label: 'B2B Dispatches', icon: Briefcase, badge: null, phase: 1 },
-    { id: 'settlements', label: 'Financials', icon: DollarSign, badge: 'Phase 3', phase: 3 },
-    { id: 'telematics', label: 'Live Telematics', icon: MapPin, badge: 'Phase 4', phase: 4 },
+    { id: 'dispatches', label: 'Trips & Daily Duty', icon: Briefcase, badge: null, phase: 1 },
+    { id: 'vehicles', label: 'Fleet Cars', icon: Car, badge: null, phase: 1 },
+    { id: 'drivers', label: 'Drivers & Staff', icon: Users, badge: null, phase: 1 },
+    { id: 'compliance', label: 'Car Papers & Expiry', icon: FileCheck, badge: null, phase: 1 },
+    { id: 'settlements', label: 'Billing & Invoices', icon: DollarSign, badge: 'Phase 3', phase: 3 },
+    { id: 'telematics', label: 'Live GPS Map', icon: MapPin, badge: 'Phase 4', phase: 4 },
   ];
 
   return (
