@@ -157,8 +157,8 @@ const DriverDirectory = () => {
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Car size={24} color="#0b57d0" />
+              <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'rgba(241, 245, 249, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Car size={24} color="#1e293b" />
               </div>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.01em' }}>
@@ -227,8 +227,8 @@ const DriverDirectory = () => {
                       style={{
                         padding: '14px 18px',
                         borderRadius: '16px',
-                        border: isSelected ? '2px solid #0b57d0' : '1px solid var(--border-color)',
-                        background: isSelected ? 'var(--accent-primary-container)' : 'var(--md-surface-container-low)',
+                        border: isSelected ? '2px solid #1e293b' : '1px solid var(--border-color)',
+                        background: isSelected ? 'rgba(241, 245, 249, 0.95)' : 'var(--md-surface-container-low)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -245,8 +245,8 @@ const DriverDirectory = () => {
                             style={{ width: '56px', height: '40px', borderRadius: '8px', objectFit: 'cover' }}
                           />
                         ) : (
-                          <div style={{ width: '56px', height: '40px', borderRadius: '8px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Car size={22} color="#0b57d0" />
+                          <div style={{ width: '56px', height: '40px', borderRadius: '8px', background: 'rgba(241, 245, 249, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Car size={22} color="#1e293b" />
                           </div>
                         )}
 
@@ -278,7 +278,7 @@ const DriverDirectory = () => {
                         width: '22px',
                         height: '22px',
                         borderRadius: '50%',
-                        border: isSelected ? '6px solid #0b57d0' : '2px solid var(--border-color)',
+                        border: isSelected ? '6px solid #1e293b' : '2px solid var(--border-color)',
                         background: '#ffffff',
                         display: 'flex',
                         alignItems: 'center',
@@ -464,8 +464,8 @@ const DriverDirectory = () => {
                         style={{ width: '100px', height: '68px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border-color)' }}
                       />
                     ) : (
-                      <div style={{ width: '100px', height: '68px', borderRadius: '8px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Car size={30} color="#0b57d0" />
+                      <div style={{ width: '100px', height: '68px', borderRadius: '8px', background: 'rgba(241, 245, 249, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Car size={30} color="#1e293b" />
                       </div>
                     )}
 
@@ -696,12 +696,12 @@ const DriverDirectory = () => {
                           width: '44px',
                           height: '44px',
                           borderRadius: '50%',
-                          background: 'var(--accent-primary-container)',
+                          background: 'rgba(241, 245, 249, 0.9)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: 700,
-                          color: '#0b57d0',
+                          color: '#1e293b',
                           fontSize: '0.9rem'
                         }}>
                           {(driver.user_detail?.first_name?.[0] || driver.user_detail?.username?.[0] || 'D').toUpperCase()}
@@ -749,9 +749,9 @@ const DriverDirectory = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '6px',
-                          background: 'var(--accent-primary-container)',
-                          color: '#0b57d0',
-                          border: 'none',
+                          background: 'rgba(241, 245, 249, 0.9)',
+                          color: '#1e293b',
+                          border: '1px solid #cbd5e1',
                           borderRadius: '12px',
                           padding: '4px 10px',
                           fontSize: '0.75rem',

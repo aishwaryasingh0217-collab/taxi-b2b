@@ -415,8 +415,8 @@ const VehicleManagement = () => {
     SEDAN: {
       title: 'Executive Sedans',
       subtitle: 'Premium corporate comfort & airport transfers',
-      bgContainer: 'var(--accent-primary-container)',
-      iconColor: '#0b57d0',
+      bgContainer: 'rgba(241, 245, 249, 0.9)',
+      iconColor: '#1e293b',
       icon: Car,
       rate: '₹2,500 / shift'
     },
@@ -783,7 +783,7 @@ const VehicleManagement = () => {
                         style={{ width: '46px', height: '46px', borderRadius: '50%', objectFit: 'cover' }}
                       />
                     ) : (
-                      <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0b57d0', fontWeight: 700, fontSize: '1.1rem' }}>
+                      <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(241, 245, 249, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b', fontWeight: 700, fontSize: '1.1rem' }}>
                         {(selectedVehicle.current_driver[0].user_detail?.first_name?.[0] || selectedVehicle.current_driver[0].user_detail?.username?.[0] || 'D').toUpperCase()}
                       </div>
                     )}
@@ -1984,8 +1984,8 @@ const VehicleManagement = () => {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <UserPlus size={22} color="#0b57d0" />
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'rgba(241, 245, 249, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserPlus size={22} color="#1e293b" />
                 </div>
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.01em' }}>
@@ -2050,8 +2050,8 @@ const VehicleManagement = () => {
                         style={{
                           padding: '14px 18px',
                           borderRadius: '16px',
-                          border: isSelected ? '2px solid #0b57d0' : '1px solid var(--border-color)',
-                          background: isSelected ? 'var(--accent-primary-container)' : 'var(--md-surface-container-low)',
+                          border: isSelected ? '2px solid #1e293b' : '1px solid var(--border-color)',
+                          background: isSelected ? 'rgba(241, 245, 249, 0.95)' : 'var(--md-surface-container-low)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -2068,7 +2068,7 @@ const VehicleManagement = () => {
                               style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }}
                             />
                           ) : (
-                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0b57d0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.95rem' }}>
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1e293b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.95rem' }}>
                               {(d.user_detail?.first_name?.[0] || d.user_detail?.username?.[0] || 'D').toUpperCase()}
                             </div>
                           )}
@@ -2098,7 +2098,7 @@ const VehicleManagement = () => {
                             width: '22px',
                             height: '22px',
                             borderRadius: '50%',
-                            border: isSelected ? '6px solid #0b57d0' : '2px solid var(--border-color)',
+                            border: isSelected ? '6px solid #1e293b' : '2px solid var(--border-color)',
                             background: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',

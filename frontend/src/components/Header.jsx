@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Radio, Bell } from 'lucide-react';
+import { Shield, Radio } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ title }) => {
@@ -7,25 +7,44 @@ const Header = ({ title }) => {
 
   return (
     <header style={{
-      height: '72px',
-      background: '#ffffff',
+      height: '74px',
+      background: 'rgba(255, 255, 255, 0.82)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
       borderBottom: '1px solid var(--border-color)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 32px',
+      padding: '0 36px',
       flexShrink: 0,
-      boxShadow: '0 1px 2px 0 rgba(60,64,67,0.06)'
+      boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.03)'
     }}>
-      {/* Title */}
+      {/* Title - Clearly visible, high-contrast, elegant typography */}
       <div>
-        <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-main)', letterSpacing: '-0.015em' }}>{title}</h2>
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 400 }}>Real-time Fleet Operations Control Center</p>
+        <h2 style={{ 
+          fontSize: '1.4rem', 
+          fontWeight: 700, 
+          color: '#0f172a', 
+          letterSpacing: '-0.015em',
+          margin: 0
+        }}>
+          {title}
+        </h2>
+        <p style={{ 
+          fontSize: '0.8rem', 
+          color: '#64748b', 
+          fontWeight: 500,
+          margin: 0,
+          marginTop: '2px',
+          letterSpacing: '0.01em'
+        }}>
+          Executive Chauffeur & Fleet Operations Console
+        </p>
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-        {/* System Health MD3 Tonal Chip */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* System Health */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -38,25 +57,25 @@ const Header = ({ title }) => {
           color: 'var(--color-success)',
           fontWeight: 600
         }}>
-          <Radio size={14} className="animate-pulse" />
-          <span>DRF + MySQL Online</span>
+          <Radio size={13} className="animate-pulse" />
+          <span>Fleet Live</span>
         </div>
 
-        {/* User Role / Company MD3 Chip */}
+        {/* Company Badge - Clean Google-style neutral */}
         <div style={{
           padding: '6px 16px',
-          background: 'var(--accent-primary-container)',
-          border: '1px solid rgba(11, 87, 208, 0.15)',
+          background: 'rgba(241, 245, 249, 0.9)',
+          border: '1px solid #cbd5e1',
           borderRadius: '20px',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
           fontSize: '0.8rem',
-          color: 'var(--accent-on-primary-container)',
+          color: '#1e293b',
           fontWeight: 600
         }}>
-          <Shield size={14} color="#0b57d0" />
-          <span>{user?.company_name || 'Metro Fleet B2B'}</span>
+          <Shield size={14} color="#334155" />
+          <span>{user?.company_name || 'Apex Executive Mobility'}</span>
         </div>
       </div>
     </header>

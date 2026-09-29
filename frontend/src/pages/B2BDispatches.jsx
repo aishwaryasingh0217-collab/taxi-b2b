@@ -99,11 +99,9 @@ const B2BDispatches = () => {
   // Open Allocation Modal
   const handleOpenAllocateModal = (booking) => {
     setSelectedBooking(booking);
-    // Pre-select matching vehicle if any
     const matchingVehicles = vehicles.filter(v => v.vehicle_class === booking.vehicle_class_requested && v.status === 'AVAILABLE');
     setSelectedVehicleId(matchingVehicles[0]?.id || vehicles.find(v => v.status === 'AVAILABLE')?.id || vehicles[0]?.id || '');
     
-    // Pre-select on-duty driver
     const onDutyDrivers = drivers.filter(d => d.duty_status === 'ON_DUTY_AVAILABLE');
     setSelectedDriverId(onDutyDrivers[0]?.id || drivers[0]?.id || '');
     
@@ -244,7 +242,7 @@ const B2BDispatches = () => {
 
   // Live bill calculation for End Trip modal
   const calcDist = Math.max(0, Number(endOdo) - Number(startOdo));
-  const calcExtraKm = Math.max(0, calcDist - 40); // 40km allowance
+  const calcExtraKm = Math.max(0, calcDist - 40);
   const calcExtraCharge = calcExtraKm * (selectedBooking?.extra_km_rate_inr || 15);
   const calcSubtotal = (selectedBooking?.base_rate_inr || 2500) + calcExtraCharge + Number(tollParking || 0);
   const calcGst = calcSubtotal * 0.05;
@@ -253,39 +251,42 @@ const B2BDispatches = () => {
   return (
     <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Friendly Header Banner */}
+      {/* Frosted Glassmorphism Header Banner */}
       <div style={{
-        padding: '24px 30px',
-        background: '#ffffff',
+        padding: '26px 32px',
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
         borderRadius: '24px',
-        border: '1px solid var(--border-color)',
+        border: '1px solid var(--border-glass)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '20px',
-        boxShadow: 'var(--elevation-1)'
+        boxShadow: 'var(--elevation-2)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
-            width: '54px',
-            height: '54px',
-            borderRadius: '18px',
-            background: 'var(--accent-primary-container)',
-            color: 'var(--accent-primary)',
+            width: '52px',
+            height: '52px',
+            borderRadius: '16px',
+            background: '#1e293b',
+            color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)',
             flexShrink: 0
           }}>
-            <Briefcase size={28} color="#0b57d0" />
+            <Briefcase size={26} color="#ffffff" />
           </div>
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
               Trips & Daily Duty
             </h2>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-              Assign drivers, monitor active rides, and bill corporate clients without paperwork confusion.
+            <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', margin: 0, fontWeight: 500 }}>
+              Assign chauffeurs, monitor live executive rides, and bill corporate clients seamlessly.
             </p>
           </div>
         </div>
@@ -299,142 +300,158 @@ const B2BDispatches = () => {
             setShowCreateModal(true);
           }}
           className="btn-primary"
-          style={{ padding: '12px 24px', borderRadius: '28px', fontSize: '0.92rem', gap: '8px' }}
+          style={{ padding: '11px 22px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}
         >
-          <Plus size={18} />
+          <Plus size={16} />
           <span>New Trip Booking</span>
         </button>
       </div>
 
-      {/* 4 Action Counters */}
+      {/* 4 Frosted Glass Metric Tiles */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         
         {/* 1. Needs Driver Card */}
         <div 
           onClick={() => setActiveTab('needs_driver')}
-          className="md3-card" 
+          className="glass-card" 
           style={{ 
-            padding: '20px', 
+            padding: '22px', 
             cursor: 'pointer',
-            border: activeTab === 'needs_driver' ? '2px solid var(--color-warning)' : '1px solid var(--border-color)',
-            background: pendingCount > 0 ? 'var(--color-warning-bg)' : '#ffffff' 
+            border: activeTab === 'needs_driver' ? '1.5px solid #1e293b' : '1px solid var(--border-glass)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-warning)', fontWeight: 700, textTransform: 'uppercase' }}>
-              🟡 NEEDS CAR & DRIVER
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              NEEDS CAR & DRIVER
             </span>
-            <span style={{ fontSize: '0.8rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(176, 96, 0, 0.15)', color: 'var(--color-warning)', fontWeight: 700 }}>
-              Action Required
+            <span style={{ 
+              fontSize: '0.74rem', 
+              padding: '2px 8px', 
+              borderRadius: '12px', 
+              background: pendingCount > 0 ? 'var(--color-warning-bg)' : 'rgba(241, 245, 249, 0.9)', 
+              color: pendingCount > 0 ? 'var(--color-warning)' : '#64748b', 
+              fontWeight: 600 
+            }}>
+              {pendingCount > 0 ? 'Pending' : 'Clear'}
             </span>
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-warning)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginTop: '8px', margin: 0 }}>
             {pendingCount}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-            {pendingCount === 0 ? 'All trips assigned' : 'Click to assign car & driver'}
+          <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', margin: 0 }}>
+            {pendingCount === 0 ? 'All bookings allocated' : 'Click to assign car & chauffeur'}
           </p>
         </div>
 
         {/* 2. Active on Road Card */}
         <div 
           onClick={() => setActiveTab('active')}
-          className="md3-card" 
+          className="glass-card" 
           style={{ 
-            padding: '20px', 
+            padding: '22px', 
             cursor: 'pointer',
-            border: activeTab === 'active' ? '2px solid var(--color-success)' : '1px solid var(--border-color)',
-            background: activeCount > 0 ? 'var(--color-success-bg)' : '#ffffff' 
+            border: activeTab === 'active' ? '1.5px solid #1e293b' : '1px solid var(--border-glass)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-success)', fontWeight: 700, textTransform: 'uppercase' }}>
-              🟢 ACTIVE ON ROAD
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              ACTIVE ON ROAD
             </span>
             {activeCount > 0 && (
-              <span className="animate-pulse" style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '12px', background: 'var(--color-success)', color: '#ffffff', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '12px', background: 'var(--color-success-bg)', color: 'var(--color-success)', fontWeight: 600 }}>
                 ● Live
               </span>
             )}
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-success)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginTop: '8px', margin: 0 }}>
             {activeCount}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-            Trips dispatched or running live
+          <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', margin: 0 }}>
+            Chauffeur dispatched or live on trip
           </p>
         </div>
 
         {/* 3. Finished Trips Card */}
         <div 
           onClick={() => setActiveTab('completed')}
-          className="md3-card" 
+          className="glass-card" 
           style={{ 
-            padding: '20px', 
+            padding: '22px', 
             cursor: 'pointer',
-            border: activeTab === 'completed' ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)'
+            border: activeTab === 'completed' ? '1.5px solid #1e293b' : '1px solid var(--border-glass)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.78rem', color: '#0b57d0', fontWeight: 700, textTransform: 'uppercase' }}>
-              🏁 FINISHED & INVOICED
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              COMPLETED & INVOICED
             </span>
-            <Receipt size={16} color="#0b57d0" />
+            <Receipt size={16} color="#64748b" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#0b57d0', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginTop: '8px', margin: 0 }}>
             {completedCount}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-            Completed & ready for billing
+          <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', margin: 0 }}>
+            Finished & billed to corporate accounts
           </p>
         </div>
 
         {/* 4. Total Billed Revenue */}
-        <div className="md3-card" style={{ padding: '20px', background: 'var(--accent-primary-container)', borderColor: 'rgba(11, 87, 208, 0.2)' }}>
+        <div className="glass-card" style={{ padding: '22px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.78rem', color: '#041e49', fontWeight: 700, textTransform: 'uppercase' }}>
-              💰 TOTAL BILLED
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              TOTAL REVENUE (INCL. GST)
             </span>
-            <DollarSign size={16} color="#0b57d0" />
+            <DollarSign size={16} color="#64748b" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#041e49', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginTop: '8px', margin: 0 }}>
             ₹{Number(summary.total_revenue_inr || 0).toLocaleString()}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: '#0b57d0', marginTop: '4px' }}>
-            Contract rate + 5% GST included
+          <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', margin: 0 }}>
+            Contract tariff + 5% GST realized
           </p>
         </div>
 
       </div>
 
-      {/* Tabs & Search Bar */}
+      {/* Google-Style Segmented Navigation & Search Filter */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
-        {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', flexWrap: 'wrap' }}>
+        {/* Segmented Pill Tabs */}
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid var(--border-glass)',
+          borderRadius: '30px',
+          padding: '4px',
+          display: 'inline-flex',
+          gap: '4px',
+          alignSelf: 'flex-start',
+          boxShadow: 'var(--elevation-1)'
+        }}>
           <button
             onClick={() => setActiveTab('needs_driver')}
             style={{
-              padding: '10px 20px',
+              padding: '8px 18px',
               borderRadius: '24px',
-              fontSize: '0.88rem',
-              fontWeight: 700,
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'needs_driver' ? 600 : 500,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'needs_driver' ? 'var(--color-warning)' : 'var(--md-surface-container)',
-              color: activeTab === 'needs_driver' ? '#ffffff' : 'var(--text-main)',
+              background: activeTab === 'needs_driver' ? '#1e293b' : 'transparent',
+              color: activeTab === 'needs_driver' ? '#ffffff' : '#475569',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
               transition: 'all 0.2s ease'
             }}
           >
-            <span>🟡 Needs Car & Driver</span>
+            <span>Needs Car & Driver</span>
             <span style={{ 
-              background: activeTab === 'needs_driver' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.08)',
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '0.76rem'
+              background: activeTab === 'needs_driver' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.06)',
+              padding: '1px 7px',
+              borderRadius: '10px',
+              fontSize: '0.74rem'
             }}>
               {pendingCount}
             </span>
@@ -443,26 +460,26 @@ const B2BDispatches = () => {
           <button
             onClick={() => setActiveTab('active')}
             style={{
-              padding: '10px 20px',
+              padding: '8px 18px',
               borderRadius: '24px',
-              fontSize: '0.88rem',
-              fontWeight: 700,
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'active' ? 600 : 500,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'active' ? 'var(--color-success)' : 'var(--md-surface-container)',
-              color: activeTab === 'active' ? '#ffffff' : 'var(--text-main)',
+              background: activeTab === 'active' ? '#1e293b' : 'transparent',
+              color: activeTab === 'active' ? '#ffffff' : '#475569',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
               transition: 'all 0.2s ease'
             }}
           >
-            <span>🟢 Active On The Road</span>
+            <span>Active On The Road</span>
             <span style={{ 
-              background: activeTab === 'active' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.08)',
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '0.76rem'
+              background: activeTab === 'active' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.06)',
+              padding: '1px 7px',
+              borderRadius: '10px',
+              fontSize: '0.74rem'
             }}>
               {activeCount}
             </span>
@@ -471,26 +488,26 @@ const B2BDispatches = () => {
           <button
             onClick={() => setActiveTab('completed')}
             style={{
-              padding: '10px 20px',
+              padding: '8px 18px',
               borderRadius: '24px',
-              fontSize: '0.88rem',
-              fontWeight: 700,
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'completed' ? 600 : 500,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'completed' ? 'var(--accent-primary)' : 'var(--md-surface-container)',
-              color: activeTab === 'completed' ? '#ffffff' : 'var(--text-main)',
+              background: activeTab === 'completed' ? '#1e293b' : 'transparent',
+              color: activeTab === 'completed' ? '#ffffff' : '#475569',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
               transition: 'all 0.2s ease'
             }}
           >
-            <span>🏁 Finished & Invoiced</span>
+            <span>Finished & Invoiced</span>
             <span style={{ 
-              background: activeTab === 'completed' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.08)',
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '0.76rem'
+              background: activeTab === 'completed' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.06)',
+              padding: '1px 7px',
+              borderRadius: '10px',
+              fontSize: '0.74rem'
             }}>
               {completedCount}
             </span>
@@ -499,26 +516,26 @@ const B2BDispatches = () => {
           <button
             onClick={() => setActiveTab('all')}
             style={{
-              padding: '10px 20px',
+              padding: '8px 18px',
               borderRadius: '24px',
-              fontSize: '0.88rem',
-              fontWeight: 600,
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'all' ? 600 : 500,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'all' ? '#1f1f1f' : 'var(--md-surface-container)',
-              color: activeTab === 'all' ? '#ffffff' : 'var(--text-main)',
+              background: activeTab === 'all' ? '#1e293b' : 'transparent',
+              color: activeTab === 'all' ? '#ffffff' : '#475569',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
               transition: 'all 0.2s ease'
             }}
           >
-            <span>📋 All Bookings</span>
+            <span>All Trips</span>
             <span style={{ 
-              background: activeTab === 'all' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.08)',
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '0.76rem'
+              background: activeTab === 'all' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.06)',
+              padding: '1px 7px',
+              borderRadius: '10px',
+              fontSize: '0.74rem'
             }}>
               {allCount}
             </span>
@@ -528,12 +545,12 @@ const B2BDispatches = () => {
         {/* Filter & Search Bar */}
         <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-            <Search size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={16} color="#64748b" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               className="input-field"
-              style={{ paddingLeft: '44px', borderRadius: '24px', background: '#ffffff' }}
-              placeholder="Search passenger name, phone, pickup, hotel, booking #, flight..."
+              style={{ paddingLeft: '44px', borderRadius: '24px' }}
+              placeholder="Search passenger name, phone, hotel, booking #, flight..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -544,9 +561,9 @@ const B2BDispatches = () => {
               className="select-field"
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value)}
-              style={{ borderRadius: '24px', background: '#ffffff' }}
+              style={{ borderRadius: '24px' }}
             >
-              <option value="">🏢 All Corporate Accounts</option>
+              <option value="">All Corporate Accounts</option>
               {clients.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -559,28 +576,28 @@ const B2BDispatches = () => {
               className="btn-secondary"
               style={{ borderRadius: '24px', padding: '8px 16px', fontSize: '0.82rem' }}
             >
-              Clear Filters
+              Reset Filters
             </button>
           )}
         </div>
       </div>
 
-      {/* Main Content: Trip Ticket Cards */}
+      {/* Main Content: Frosted Glass Trip Ticket Cards */}
       {loading ? (
-        <div className="md3-card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <div className="glass-card" style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
           <RefreshCw size={24} className="animate-pulse" style={{ margin: '0 auto 12px auto' }} />
           Loading trip assignments...
         </div>
       ) : filteredBookings.length === 0 ? (
-        <div className="md3-card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
-          <CheckCircle size={40} color="var(--color-success)" style={{ margin: '0 auto 14px auto' }} />
-          <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)' }}>
+        <div className="glass-card" style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+          <CheckCircle size={38} color="#15803d" style={{ margin: '0 auto 14px auto' }} />
+          <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
             {activeTab === 'needs_driver' ? 'All Clear! No Trips Waiting for Assignment' : 'No Trips Found in this Category'}
           </h4>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>
             {activeTab === 'needs_driver' 
-              ? 'Great job! Every current corporate booking has a car and driver assigned.' 
-              : 'Try selecting a different tab or clearing your search filter.'}
+              ? 'Every contracted corporate booking currently has a vehicle and chauffeur allocated.' 
+              : 'Try selecting a different tab or resetting your search filter.'}
           </p>
         </div>
       ) : (
@@ -588,15 +605,10 @@ const B2BDispatches = () => {
           {filteredBookings.map((b) => (
             <div 
               key={b.id} 
-              className="md3-card"
+              className="glass-card"
               style={{
                 padding: '24px',
                 borderRadius: '20px',
-                borderLeft: b.status === 'PENDING' 
-                  ? '6px solid var(--color-warning)' 
-                  : (b.status === 'ON_TRIP' || b.status === 'DISPATCHED') 
-                    ? '6px solid var(--color-success)' 
-                    : '6px solid #0b57d0',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '18px'
@@ -606,29 +618,30 @@ const B2BDispatches = () => {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   <span className="font-mono" style={{ 
-                    fontSize: '0.95rem', 
-                    fontWeight: 800, 
-                    color: 'var(--accent-primary)',
-                    background: 'var(--accent-primary-container)',
+                    fontSize: '0.92rem', 
+                    fontWeight: 700, 
+                    color: '#0f172a',
+                    background: 'rgba(241, 245, 249, 0.9)',
                     padding: '4px 10px',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1'
                   }}>
                     {b.booking_reference}
                   </span>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Building2 size={16} color="var(--text-dim)" />
-                    <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                    <Building2 size={16} color="#64748b" />
+                    <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a' }}>
                       {b.client_name}
                     </span>
                   </div>
 
                   <span style={{
-                    fontSize: '0.76rem',
+                    fontSize: '0.74rem',
                     padding: '3px 10px',
                     borderRadius: '12px',
-                    background: 'var(--md-surface-container-high)',
-                    color: 'var(--text-muted)',
+                    background: 'rgba(241, 245, 249, 0.8)',
+                    color: '#475569',
                     fontWeight: 600
                   }}>
                     {b.booking_type_display || b.booking_type}
@@ -636,12 +649,12 @@ const B2BDispatches = () => {
 
                   {b.flight_number && (
                     <span style={{
-                      fontSize: '0.76rem',
+                      fontSize: '0.74rem',
                       padding: '3px 10px',
                       borderRadius: '12px',
-                      background: 'rgba(11, 87, 208, 0.1)',
-                      color: '#0b57d0',
-                      fontWeight: 700,
+                      background: 'rgba(241, 245, 249, 0.8)',
+                      color: '#1e293b',
+                      fontWeight: 600,
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px'
@@ -654,37 +667,38 @@ const B2BDispatches = () => {
                 {/* Status Pill */}
                 <div>
                   {b.status === 'PENDING' && (
-                    <span className="badge badge-warning" style={{ fontSize: '0.82rem', padding: '6px 14px', borderRadius: '16px' }}>
+                    <span className="badge badge-warning" style={{ fontSize: '0.78rem', padding: '5px 12px', borderRadius: '16px' }}>
                       🟡 Needs Car & Driver
                     </span>
                   )}
                   {b.status === 'DISPATCHED' && (
-                    <span className="badge badge-info" style={{ fontSize: '0.82rem', padding: '6px 14px', borderRadius: '16px' }}>
-                      🚗 Dispatched & On the Way
+                    <span className="badge badge-info" style={{ fontSize: '0.78rem', padding: '5px 12px', borderRadius: '16px' }}>
+                      🚗 Dispatched & En Route
                     </span>
                   )}
                   {b.status === 'ON_TRIP' && (
-                    <span className="badge badge-success" style={{ fontSize: '0.82rem', padding: '6px 14px', borderRadius: '16px' }}>
+                    <span className="badge badge-success" style={{ fontSize: '0.78rem', padding: '5px 12px', borderRadius: '16px' }}>
                       🟢 Live: Passenger in Car
                     </span>
                   )}
                   {b.status === 'COMPLETED' && (
                     <span style={{ 
-                      fontSize: '0.82rem', 
-                      padding: '6px 14px', 
+                      fontSize: '0.78rem', 
+                      padding: '5px 12px', 
                       borderRadius: '16px',
-                      background: 'rgba(11, 87, 208, 0.12)',
-                      color: '#0b57d0',
-                      fontWeight: 700,
+                      background: 'rgba(241, 245, 249, 0.9)',
+                      color: '#1e293b',
+                      border: '1px solid #cbd5e1',
+                      fontWeight: 600,
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px'
                     }}>
-                      <Receipt size={14} /> Completed & Invoiced
+                      <Receipt size={13} /> Completed & Invoiced
                     </span>
                   )}
                   {b.status === 'CANCELLED' && (
-                    <span className="badge badge-danger" style={{ fontSize: '0.82rem', padding: '6px 14px', borderRadius: '16px' }}>
+                    <span className="badge badge-danger" style={{ fontSize: '0.78rem', padding: '5px 12px', borderRadius: '16px' }}>
                       Cancelled
                     </span>
                   )}
@@ -692,77 +706,81 @@ const B2BDispatches = () => {
               </div>
 
               {/* Card Middle Row: Passenger & Route Banner */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 1fr', gap: '20px', alignItems: 'stretch' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 1fr', gap: '18px', alignItems: 'stretch' }}>
                 
                 {/* Passenger Info */}
                 <div style={{ 
-                  background: 'var(--md-surface-container-low)', 
+                  background: 'rgba(248, 250, 252, 0.8)', 
+                  backdropFilter: 'blur(12px)',
                   padding: '16px', 
                   borderRadius: '14px',
+                  border: '1px solid var(--border-color)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   gap: '6px'
                 }}>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     PASSENGER DETAILS
                   </span>
-                  <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>
+                  <strong style={{ fontSize: '1.02rem', color: '#0f172a' }}>
                     {b.passenger_name}
                   </strong>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
                     <a 
                       href={`tel:${b.passenger_phone}`}
                       style={{ 
-                        fontSize: '0.85rem', 
-                        color: 'var(--accent-primary)', 
+                        fontSize: '0.82rem', 
+                        color: '#1e293b', 
                         textDecoration: 'none', 
                         display: 'inline-flex', 
                         alignItems: 'center', 
-                        gap: '4px',
+                        gap: '5px',
                         fontWeight: 600,
                         background: '#ffffff',
                         padding: '4px 10px',
                         borderRadius: '12px',
-                        border: '1px solid var(--border-color)'
+                        border: '1px solid #cbd5e1'
                       }}
                     >
-                      <Phone size={13} /> {b.passenger_phone}
+                      <Phone size={12} /> {b.passenger_phone}
                     </a>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Clock size={13} />
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Clock size={12} />
                     <span>Pickup Time: <strong>{new Date(b.pickup_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</strong></span>
                   </div>
                 </div>
 
                 {/* Visual Route */}
                 <div style={{ 
-                  background: 'var(--md-surface-container-low)', 
+                  background: 'rgba(248, 250, 252, 0.8)', 
+                  backdropFilter: 'blur(12px)',
                   padding: '16px', 
                   borderRadius: '14px',
+                  border: '1px solid var(--border-color)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   gap: '10px'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--color-success)', marginTop: '4px', flexShrink: 0 }} />
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#15803d', marginTop: '5px', flexShrink: 0 }} />
                     <div>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--color-success)', fontWeight: 700, textTransform: 'uppercase' }}>PICKUP POINT</span>
-                      <p style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-main)', marginTop: '1px' }}>
+                      <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>PICKUP POINT</span>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#0f172a', margin: 0, marginTop: '1px' }}>
                         {b.pickup_location}
                       </p>
                     </div>
                   </div>
 
-                  <div style={{ borderLeft: '2px dashed var(--border-color)', height: '14px', marginLeft: '5px' }} />
+                  <div style={{ borderLeft: '2px dashed #cbd5e1', height: '12px', marginLeft: '4px' }} />
 
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--accent-primary)', marginTop: '4px', flexShrink: 0 }} />
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#1e293b', marginTop: '5px', flexShrink: 0 }} />
                     <div>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase' }}>DROP-OFF DESTINATION</span>
-                      <p style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-main)', marginTop: '1px' }}>
+                      <span style={{ fontSize: '0.7rem', color: '#1e293b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>DROP-OFF DESTINATION</span>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#0f172a', margin: 0, marginTop: '1px' }}>
                         {b.dropoff_location}
                       </p>
                     </div>
@@ -771,31 +789,33 @@ const B2BDispatches = () => {
 
                 {/* Fare & Billing Summary */}
                 <div style={{ 
-                  background: 'var(--md-surface-container-low)', 
+                  background: 'rgba(248, 250, 252, 0.8)', 
+                  backdropFilter: 'blur(12px)',
                   padding: '16px', 
                   borderRadius: '14px',
+                  border: '1px solid var(--border-color)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'flex-end',
                   textAlign: 'right'
                 }}>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase' }}>
-                    TOTAL BILL (INCL. GST)
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    TOTAL INVOICED
                   </span>
-                  <strong style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
+                  <strong style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
                     ₹{Number(b.total_fare_inr).toLocaleString()}
                   </strong>
-                  <span style={{ fontSize: '0.76rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
                     Base: ₹{b.base_rate_inr} + 5% GST
                   </span>
                   {b.distance_km > 0 && (
-                    <span style={{ fontSize: '0.76rem', color: 'var(--color-success)', fontWeight: 700, marginTop: '4px' }}>
+                    <span style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: 600, marginTop: '4px' }}>
                       🚗 {b.distance_km} KM Traveled
                     </span>
                   )}
                   {b.toll_parking_inr > 0 && (
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       + ₹{b.toll_parking_inr} Toll/Parking
                     </span>
                   )}
@@ -818,29 +838,29 @@ const B2BDispatches = () => {
                   {b.assigned_vehicle_detail && b.assigned_driver_detail ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Car size={18} color="var(--accent-primary)" />
+                        <Car size={16} color="#475569" />
                         <div>
-                          <strong className="font-mono" style={{ fontSize: '0.92rem', color: 'var(--text-main)' }}>
+                          <strong className="font-mono" style={{ fontSize: '0.9rem', color: '#0f172a' }}>
                             {b.assigned_vehicle_detail.registration_number}
                           </strong>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginLeft: '6px' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#64748b', marginLeft: '6px' }}>
                             ({b.assigned_vehicle_detail.make} {b.assigned_vehicle_detail.model})
                           </span>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <User size={18} color="var(--color-success)" />
+                        <User size={16} color="#475569" />
                         <div>
-                          <strong style={{ fontSize: '0.92rem', color: 'var(--text-main)' }}>
+                          <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>
                             {b.assigned_driver_detail.full_name}
                           </strong>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--color-warning)', marginLeft: '6px' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#b45309', marginLeft: '6px' }}>
                             ★ {b.assigned_driver_detail.rating}
                           </span>
                           <a 
                             href={`tel:${b.assigned_driver_detail.phone_number}`}
-                            style={{ fontSize: '0.78rem', color: 'var(--accent-primary)', textDecoration: 'none', marginLeft: '8px' }}
+                            style={{ fontSize: '0.78rem', color: '#1e293b', textDecoration: 'none', marginLeft: '8px', fontWeight: 500 }}
                           >
                             📞 {b.assigned_driver_detail.phone_number}
                           </a>
@@ -848,16 +868,16 @@ const B2BDispatches = () => {
                       </div>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-warning)' }}>
-                      <AlertTriangle size={18} />
-                      <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>
-                        No car or driver allocated yet. (Requested: <strong>{b.vehicle_class_requested}</strong>)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#b45309' }}>
+                      <AlertTriangle size={16} />
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                        No car or chauffeur assigned yet. (Requested: <strong>{b.vehicle_class_requested}</strong>)
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* 1-Click Operations */}
+                {/* Google-Style Neutral Action Buttons */}
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   
                   {/* PENDING ACTIONS */}
@@ -866,16 +886,16 @@ const B2BDispatches = () => {
                       <button
                         onClick={() => handleOpenAllocateModal(b)}
                         className="btn-primary"
-                        style={{ padding: '9px 18px', fontSize: '0.88rem', borderRadius: '20px', gap: '6px' }}
+                        style={{ padding: '8px 18px', fontSize: '0.85rem', borderRadius: '20px', gap: '6px' }}
                       >
-                        <UserCheck size={16} />
-                        <span>Assign Car & Driver</span>
+                        <UserCheck size={15} />
+                        <span>Assign Car & Chauffeur</span>
                       </button>
 
                       <button
                         onClick={() => handleCancelBooking(b.id)}
                         className="btn-secondary"
-                        style={{ padding: '9px 14px', fontSize: '0.82rem', borderRadius: '20px', color: 'var(--color-danger)' }}
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
                       >
                         Cancel
                       </button>
@@ -889,24 +909,22 @@ const B2BDispatches = () => {
                         onClick={() => handleStartTrip(b.id)}
                         className="btn-primary"
                         style={{ 
-                          padding: '9px 20px', 
-                          fontSize: '0.88rem', 
-                          borderRadius: '20px', 
-                          background: 'var(--color-success)', 
-                          borderColor: 'var(--color-success)',
+                          padding: '8px 18px', 
+                          fontSize: '0.85rem', 
+                          borderRadius: '20px',
                           gap: '6px'
                         }}
                       >
-                        <Play size={16} />
-                        <span>Passenger In Car (Start Trip)</span>
+                        <Play size={15} />
+                        <span>Passenger Picked Up</span>
                       </button>
 
                       <button
                         onClick={() => handleOpenAllocateModal(b)}
                         className="btn-secondary"
-                        style={{ padding: '9px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
                       >
-                        Change Driver
+                        Change Chauffeur
                       </button>
                     </>
                   )}
@@ -916,10 +934,10 @@ const B2BDispatches = () => {
                     <button
                       onClick={() => handleOpenTripControl(b)}
                       className="btn-primary"
-                      style={{ padding: '10px 22px', fontSize: '0.88rem', borderRadius: '20px', gap: '6px' }}
+                      style={{ padding: '9px 20px', fontSize: '0.85rem', borderRadius: '20px', gap: '6px' }}
                     >
-                      <Receipt size={16} />
-                      <span>End Trip & Enter Meter (Bill Client)</span>
+                      <Receipt size={15} />
+                      <span>End Trip & Invoice Client</span>
                     </button>
                   )}
 
@@ -928,9 +946,9 @@ const B2BDispatches = () => {
                     <button
                       onClick={() => handleOpenInvoiceModal(b)}
                       className="btn-secondary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '20px', gap: '6px' }}
+                      style={{ padding: '8px 16px', fontSize: '0.84rem', borderRadius: '20px', gap: '6px' }}
                     >
-                      <FileText size={15} color="#0b57d0" />
+                      <FileText size={14} color="#334155" />
                       <span>View Tax Invoice</span>
                     </button>
                   )}
@@ -943,24 +961,24 @@ const B2BDispatches = () => {
         </div>
       )}
 
-      {/* MODAL 1: ASSIGN CAR & DRIVER */}
+      {/* MODAL 1: ASSIGN CAR & CHAUFFEUR */}
       {showAllocateModal && createPortal(
         <div className="portal-modal-overlay" onClick={() => setShowAllocateModal(false)}>
           <div 
-            className="md3-card portal-modal-card" 
+            className="portal-modal-card" 
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '600px', padding: '30px', borderRadius: '24px' }}
+            style={{ maxWidth: '580px', padding: '30px', borderRadius: '24px' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <UserCheck size={22} color="#0b57d0" />
+                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserCheck size={20} color="#ffffff" />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                    Assign Car & Driver
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Assign Car & Chauffeur
                   </h3>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px', margin: 0 }}>
                     {selectedBooking?.booking_reference} • {selectedBooking?.client_name}
                   </p>
                 </div>
@@ -971,33 +989,33 @@ const B2BDispatches = () => {
                 className="btn-secondary"
                 style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               
               {/* Trip Quick Summary */}
-              <div style={{ padding: '14px 18px', background: 'var(--md-surface-container-low)', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: 'var(--text-dim)' }}>Passenger: <strong style={{ color: 'var(--text-main)' }}>{selectedBooking?.passenger_name}</strong></span>
-                  <span style={{ color: 'var(--text-dim)' }}>Requested: <strong style={{ color: '#0b57d0' }}>{selectedBooking?.vehicle_class_requested}</strong></span>
+              <div style={{ padding: '14px 18px', background: 'rgba(248, 250, 252, 0.85)', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                  <span style={{ color: '#64748b' }}>Passenger: <strong style={{ color: '#0f172a' }}>{selectedBooking?.passenger_name}</strong></span>
+                  <span style={{ color: '#64748b' }}>Requested: <strong style={{ color: '#1e293b' }}>{selectedBooking?.vehicle_class_requested}</strong></span>
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '6px' }}>
+                <p style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '6px', margin: 0 }}>
                   Route: {selectedBooking?.pickup_location} ➔ {selectedBooking?.dropoff_location}
                 </p>
               </div>
 
               {/* Step 1: Select Fleet Car */}
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#0f172a' }}>
                   Step 1: Choose Fleet Car *
                 </label>
                 <select
                   className="select-field"
                   value={selectedVehicleId}
                   onChange={(e) => setSelectedVehicleId(e.target.value)}
-                  style={{ width: '100%', borderRadius: '12px', padding: '12px' }}
+                  style={{ width: '100%', borderRadius: '12px', padding: '11px' }}
                 >
                   <option value="">Select available car...</option>
                   {vehicles.map((v) => (
@@ -1006,36 +1024,30 @@ const B2BDispatches = () => {
                     </option>
                   ))}
                 </select>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
-                  Cars in maintenance or on other trips are excluded.
-                </span>
               </div>
 
               {/* Step 2: Select Driver */}
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                  Step 2: Choose Driver / Chauffeur *
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#0f172a' }}>
+                  Step 2: Choose Chauffeur *
                 </label>
                 <select
                   className="select-field"
                   value={selectedDriverId}
                   onChange={(e) => setSelectedDriverId(e.target.value)}
-                  style={{ width: '100%', borderRadius: '12px', padding: '12px' }}
+                  style={{ width: '100%', borderRadius: '12px', padding: '11px' }}
                 >
-                  <option value="">Select available driver...</option>
+                  <option value="">Select available chauffeur...</option>
                   {drivers.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.full_name} — 📞 {d.phone_number} (★ {d.rating}) [{d.duty_status}]
                     </option>
                   ))}
                 </select>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
-                  The driver will receive trip pickup location and passenger contact on dispatch.
-                </span>
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
                 <button
                   type="button"
                   onClick={() => setShowAllocateModal(false)}
@@ -1049,9 +1061,9 @@ const B2BDispatches = () => {
                   onClick={handleConfirmAllocation}
                   disabled={allocationSubmitting}
                   className="btn-primary"
-                  style={{ borderRadius: '24px', padding: '10px 24px' }}
+                  style={{ borderRadius: '24px', padding: '10px 22px' }}
                 >
-                  {allocationSubmitting ? 'Assigning...' : 'Confirm & Dispatch Trip'}
+                  {allocationSubmitting ? 'Dispatching...' : 'Confirm & Dispatch Trip'}
                 </button>
               </div>
 
@@ -1065,20 +1077,20 @@ const B2BDispatches = () => {
       {showTripControlModal && createPortal(
         <div className="portal-modal-overlay" onClick={() => setShowTripControlModal(false)}>
           <div 
-            className="md3-card portal-modal-card" 
+            className="portal-modal-card" 
             onClick={(e) => e.stopPropagation()}
             style={{ maxWidth: '580px', padding: '30px', borderRadius: '24px' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'var(--color-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Receipt size={22} color="var(--color-success)" />
+                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Receipt size={20} color="#ffffff" />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                     End Trip & Generate Bill
                   </h3>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px', margin: 0 }}>
                     {selectedBooking?.booking_reference} • {selectedBooking?.passenger_name}
                   </p>
                 </div>
@@ -1089,15 +1101,15 @@ const B2BDispatches = () => {
                 className="btn-secondary"
                 style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-dim)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>
                     STARTING ODOMETER (KM)
                   </label>
                   <input
@@ -1105,12 +1117,12 @@ const B2BDispatches = () => {
                     className="input-field"
                     value={startOdo}
                     disabled
-                    style={{ background: 'var(--md-surface-container-high)', borderRadius: '12px' }}
+                    style={{ background: 'rgba(241, 245, 249, 0.8)', borderRadius: '12px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#0f172a' }}>
                     FINAL ODOMETER (KM) *
                   </label>
                   <input
@@ -1118,7 +1130,7 @@ const B2BDispatches = () => {
                     className="input-field"
                     value={endOdo}
                     onChange={(e) => setEndOdo(e.target.value)}
-                    style={{ borderRadius: '12px', fontWeight: 700 }}
+                    style={{ borderRadius: '12px', fontWeight: 600 }}
                     placeholder="Enter final km reading"
                     required
                   />
@@ -1126,7 +1138,7 @@ const B2BDispatches = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#0f172a' }}>
                   TOLL / PARKING / AIRPORT ENTRY CHARGES (₹ INR)
                 </label>
                 <input
@@ -1137,14 +1149,11 @@ const B2BDispatches = () => {
                   style={{ borderRadius: '12px' }}
                   placeholder="0"
                 />
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
-                  Any fastag tolls or parking slips paid by driver will be reimbursed and added to bill.
-                </span>
               </div>
 
               {/* Real-time Bill Calculation Preview */}
               <div style={{ 
-                background: 'var(--md-surface-container-low)', 
+                background: 'rgba(248, 250, 252, 0.9)', 
                 padding: '16px', 
                 borderRadius: '16px', 
                 border: '1px solid var(--border-color)',
@@ -1152,8 +1161,8 @@ const B2BDispatches = () => {
                 flexDirection: 'column',
                 gap: '8px'
               }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
-                  LIVE BILL BREAKDOWN
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  INVOICE BREAKDOWN
                 </span>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
@@ -1167,7 +1176,7 @@ const B2BDispatches = () => {
                 </div>
 
                 {calcExtraCharge > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--color-warning)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#b45309' }}>
                     <span>Extra KM ({calcExtraKm} km @ ₹{selectedBooking?.extra_km_rate_inr}/km):</span>
                     <span>+ ₹{calcExtraCharge}</span>
                   </div>
@@ -1180,7 +1189,7 @@ const B2BDispatches = () => {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-dim)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#64748b' }}>
                   <span>GST (5%):</span>
                   <span>+ ₹{calcGst.toFixed(2)}</span>
                 </div>
@@ -1188,9 +1197,9 @@ const B2BDispatches = () => {
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
-                  fontSize: '1.1rem', 
+                  fontSize: '1.05rem', 
                   fontWeight: 800, 
-                  color: '#041e49',
+                  color: '#0f172a',
                   borderTop: '1px solid var(--border-color)',
                   paddingTop: '8px',
                   marginTop: '4px'
@@ -1201,7 +1210,7 @@ const B2BDispatches = () => {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
                 <button
                   type="button"
                   onClick={() => setShowTripControlModal(false)}
@@ -1215,7 +1224,7 @@ const B2BDispatches = () => {
                   onClick={handleCompleteTrip}
                   disabled={tripSubmitting || !endOdo || Number(endOdo) <= Number(startOdo)}
                   className="btn-primary"
-                  style={{ borderRadius: '24px', padding: '10px 24px' }}
+                  style={{ borderRadius: '24px', padding: '10px 22px' }}
                 >
                   {tripSubmitting ? 'Generating Invoice...' : 'Complete Trip & Bill Client'}
                 </button>
@@ -1231,65 +1240,69 @@ const B2BDispatches = () => {
       {showInvoiceModal && selectedBooking && createPortal(
         <div className="portal-modal-overlay" onClick={() => setShowInvoiceModal(false)}>
           <div 
-            className="md3-card portal-modal-card" 
+            className="portal-modal-card" 
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '640px', padding: '36px', borderRadius: '24px', background: '#ffffff' }}
+            style={{ maxWidth: '640px', padding: '36px', borderRadius: '24px' }}
           >
             {/* Invoice Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid var(--border-color)', paddingBottom: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px', marginBottom: '20px' }}>
               <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-                  APEX FLEET B2B TAX INVOICE
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
+                  APEX FLEET TAX INVOICE
                 </h2>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px', margin: 0 }}>
                   Commercial Passenger Transport Service
                 </p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, marginTop: '2px' }}>
                   GSTIN: <strong>30AAACA1234F1Z8</strong> • Panaji, Goa
                 </p>
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <span className="font-mono" style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-primary)' }}>
+                <span className="font-mono" style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
                   {selectedBooking.booking_reference}
                 </span>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px', margin: 0 }}>
                   Date: {new Date(selectedBooking.pickup_time).toLocaleDateString()}
                 </p>
-                <span className="badge badge-success" style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+                <span style={{ 
+                  marginTop: '6px', 
+                  fontSize: '0.72rem', 
+                  padding: '3px 8px', 
+                  borderRadius: '10px', 
+                  background: 'var(--color-success-bg)', 
+                  color: 'var(--color-success)', 
+                  fontWeight: 600,
+                  display: 'inline-block' 
+                }}>
                   PAID / BILLED TO ACCOUNT
                 </span>
               </div>
             </div>
 
             {/* Client & Passenger Info */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-              <div style={{ background: 'var(--md-surface-container-low)', padding: '14px', borderRadius: '12px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase' }}>BILLED TO CLIENT:</span>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>{selectedBooking.client_name}</h4>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>B2B Corporate Contract</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ background: 'rgba(248, 250, 252, 0.85)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>BILLED TO CLIENT:</span>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', marginTop: '2px', margin: 0 }}>{selectedBooking.client_name}</h4>
+                <p style={{ fontSize: '0.76rem', color: '#64748b', margin: 0, marginTop: '2px' }}>B2B Corporate Contract</p>
               </div>
 
-              <div style={{ background: 'var(--md-surface-container-low)', padding: '14px', borderRadius: '12px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase' }}>PASSENGER & CHAUFFEUR:</span>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>{selectedBooking.passenger_name}</h4>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                  Car: {selectedBooking.assigned_vehicle_detail?.registration_number || 'N/A'} • Driver: {selectedBooking.assigned_driver_detail?.full_name || 'N/A'}
+              <div style={{ background: 'rgba(248, 250, 252, 0.85)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>PASSENGER & CHAUFFEUR:</span>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', marginTop: '2px', margin: 0 }}>{selectedBooking.passenger_name}</h4>
+                <p style={{ fontSize: '0.76rem', color: '#64748b', margin: 0, marginTop: '2px' }}>
+                  Car: {selectedBooking.assigned_vehicle_detail?.registration_number || 'N/A'} • Chauffeur: {selectedBooking.assigned_driver_detail?.full_name || 'N/A'}
                 </p>
               </div>
             </div>
 
             {/* Route Details */}
-            <div style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '24px' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase' }}>TRIP JOURNEY:</span>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-main)', marginTop: '4px' }}>
+            <div style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px', background: '#ffffff' }}>
+              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>TRIP JOURNEY:</span>
+              <p style={{ fontSize: '0.85rem', color: '#0f172a', marginTop: '4px', margin: 0 }}>
                 <strong>From:</strong> {selectedBooking.pickup_location} ➔ <strong>To:</strong> {selectedBooking.dropoff_location}
               </p>
-              {selectedBooking.flight_number && (
-                <p style={{ fontSize: '0.8rem', color: '#0b57d0', marginTop: '2px' }}>
-                  Flight: {selectedBooking.flight_number}
-                </p>
-              )}
             </div>
 
             {/* Invoice Line Items */}
@@ -1328,16 +1341,16 @@ const B2BDispatches = () => {
                   </tr>
                 )}
                 <tr>
-                  <td colSpan="3" style={{ textAlign: 'right', color: 'var(--text-dim)' }}>GST (5% SAC 9964):</td>
+                  <td colSpan="3" style={{ textAlign: 'right', color: '#64748b' }}>GST (5% SAC 9964):</td>
                   <td style={{ textAlign: 'right', fontWeight: 600 }}>
                     ₹{((Number(selectedBooking.total_fare_inr) || 0) * 0.05 / 1.05).toFixed(2)}
                   </td>
                 </tr>
-                <tr style={{ background: 'var(--md-surface-container-low)' }}>
-                  <td colSpan="3" style={{ textAlign: 'right', fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>
+                <tr style={{ background: 'rgba(241, 245, 249, 0.7)' }}>
+                  <td colSpan="3" style={{ textAlign: 'right', fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
                     TOTAL INVOICE AMOUNT:
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1.15rem', color: '#0b57d0' }}>
+                  <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1.1rem', color: '#0f172a' }}>
                     ₹{Number(selectedBooking.total_fare_inr).toLocaleString()}
                   </td>
                 </tr>
@@ -1352,7 +1365,7 @@ const B2BDispatches = () => {
                 className="btn-secondary"
                 style={{ borderRadius: '24px', gap: '6px' }}
               >
-                <Printer size={16} />
+                <Printer size={15} />
                 <span>Print Bill</span>
               </button>
               <button
@@ -1374,20 +1387,20 @@ const B2BDispatches = () => {
       {showCreateModal && createPortal(
         <div className="portal-modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div 
-            className="md3-card portal-modal-card" 
+            className="portal-modal-card" 
             onClick={(e) => e.stopPropagation()}
             style={{ maxWidth: '640px', padding: '32px', borderRadius: '24px' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'var(--accent-primary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Plus size={22} color="#0b57d0" />
+                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Plus size={20} color="#ffffff" />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                     New Trip Booking
                   </h3>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px', margin: 0 }}>
                     Create corporate airport transfer, executive ride, or hotel shuttle.
                   </p>
                 </div>
@@ -1398,7 +1411,7 @@ const B2BDispatches = () => {
                 className="btn-secondary"
                 style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
@@ -1407,7 +1420,7 @@ const B2BDispatches = () => {
               {/* Client & Type */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Corporate Account *
                   </label>
                   <select
@@ -1425,7 +1438,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Trip Service Type
                   </label>
                   <select
@@ -1446,7 +1459,7 @@ const B2BDispatches = () => {
               {/* Passenger Info */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Passenger Name *
                   </label>
                   <input
@@ -1461,7 +1474,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Passenger Phone *
                   </label>
                   <input
@@ -1479,7 +1492,7 @@ const B2BDispatches = () => {
               {/* Route */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Pickup Location *
                   </label>
                   <input
@@ -1494,7 +1507,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Drop-off Destination *
                   </label>
                   <input
@@ -1512,7 +1525,7 @@ const B2BDispatches = () => {
               {/* Timing & Vehicle Class */}
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Pickup Date & Time *
                   </label>
                   <input
@@ -1526,7 +1539,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Car Type
                   </label>
                   <select
@@ -1543,7 +1556,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Flight # (Optional)
                   </label>
                   <input
@@ -1560,7 +1573,7 @@ const B2BDispatches = () => {
               {/* Agreed Rates */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Base Contract Fare (₹ INR) *
                   </label>
                   <input
@@ -1574,7 +1587,7 @@ const B2BDispatches = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#0f172a' }}>
                     Extra Rate per KM (₹ INR)
                   </label>
                   <input
@@ -1601,7 +1614,7 @@ const B2BDispatches = () => {
                   type="submit"
                   disabled={createSubmitting}
                   className="btn-primary"
-                  style={{ borderRadius: '24px', padding: '10px 24px' }}
+                  style={{ borderRadius: '24px', padding: '10px 22px' }}
                 >
                   {createSubmitting ? 'Booking...' : 'Create Booking'}
                 </button>

@@ -32,33 +32,36 @@ const DashboardOverview = ({ setActiveTab }) => {
   return (
     <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
       
-      {/* Top Banner / Hero Metric (Material 3 Surface Container) */}
+      {/* Top Banner / Hero Metric with Glassmorphism */}
       <div style={{
-        padding: '30px 36px',
-        background: 'var(--md-surface-container)',
+        padding: '28px 34px',
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
         borderRadius: '24px',
-        border: '1px solid var(--border-color)',
+        border: '1px solid var(--border-glass)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px'
+        gap: '20px',
+        boxShadow: 'var(--elevation-2)'
       }}>
         <div>
           <span className="badge badge-info" style={{ marginBottom: '10px' }}>B2B Operations Status</span>
-          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0, marginTop: '4px' }}>
             Fleet Operational Readiness: <span style={{ color: 'var(--color-success)' }}>94.2%</span>
           </h2>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '6px', maxWidth: '650px' }}>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '6px', maxWidth: '650px', margin: 0 }}>
             Active duty assignments, driver safety scores, and real-time compliance monitoring across Metro Fleet.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '14px' }}>
-          <button onClick={() => setActiveTab('vehicles')} className="btn-primary" style={{ padding: '12px 22px' }}>
+          <button onClick={() => setActiveTab('vehicles')} className="btn-primary" style={{ padding: '11px 22px' }}>
             <Car size={18} />
             <span>Manage Vehicles</span>
           </button>
-          <button onClick={() => setActiveTab('drivers')} className="btn-secondary" style={{ padding: '12px 22px' }}>
+          <button onClick={() => setActiveTab('drivers')} className="btn-secondary" style={{ padding: '11px 22px' }}>
             <Users size={18} />
             <span>Driver Roster</span>
           </button>
@@ -69,14 +72,14 @@ const DashboardOverview = ({ setActiveTab }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
         
         {/* Card 1: Total Fleet */}
-        <div className="md3-card" style={{ padding: '24px' }}>
+        <div className="glass-card" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-dim)', letterSpacing: '0.04em' }}>TOTAL VEHICLES</span>
-            <div style={{ width: '42px', height: '42px', background: 'var(--accent-primary-container)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Car size={22} color="#0b57d0" />
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', letterSpacing: '0.06em' }}>TOTAL VEHICLES</span>
+            <div style={{ width: '42px', height: '42px', background: 'rgba(241, 245, 249, 0.9)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Car size={22} color="#1e293b" />
             </div>
           </div>
-          <p style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '12px', letterSpacing: '-0.02em' }}>
+          <p style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '12px', letterSpacing: '-0.02em', margin: 0 }}>
             {loading ? '...' : vehicleSummary.total_vehicles}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', fontSize: '0.8rem', color: 'var(--color-success)' }}>

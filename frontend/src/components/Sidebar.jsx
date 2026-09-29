@@ -28,7 +28,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   return (
     <aside style={{
       width: '280px',
-      background: '#ffffff',
+      background: 'rgba(255, 255, 255, 0.82)',
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
       borderRight: '1px solid var(--border-color)',
       display: 'flex',
       flexDirection: 'column',
@@ -37,31 +39,31 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       flexShrink: 0
     }}>
       <div>
-        {/* MD3 Brand Header */}
+        {/* Brand Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '0 8px 24px 8px', borderBottom: '1px solid var(--border-color)' }}>
           <div style={{
             width: '44px',
             height: '44px',
             borderRadius: '14px',
-            background: 'var(--accent-primary-container)',
-            color: 'var(--accent-primary)',
+            background: '#1e293b',
+            color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: 'var(--elevation-1)'
+            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.15)'
           }}>
-            <Car size={24} color="#0b57d0" />
+            <Car size={22} color="#ffffff" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>APEX FLEET</h1>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 500 }}>Material 3 Operations</p>
+            <h1 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)', margin: 0 }}>APEX FLEET</h1>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 500, margin: 0 }}>Executive Mobility Operations</p>
           </div>
         </div>
 
         {/* Navigation Section */}
         <div style={{ marginTop: '24px' }}>
           <p style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 600, letterSpacing: '0.08em', padding: '0 12px 12px 12px' }}>
-            Main Menu
+            OPERATIONS
           </p>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {navItems.map((item) => {
@@ -77,19 +79,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '12px 16px',
-                    borderRadius: '28px',
+                    padding: '11px 16px',
+                    borderRadius: '24px',
                     border: 'none',
-                    background: isActive ? 'var(--accent-primary-container)' : 'transparent',
-                    color: isActive ? 'var(--accent-on-primary-container)' : isLocked ? 'var(--text-dim)' : 'var(--text-muted)',
+                    background: isActive ? '#1e293b' : 'transparent',
+                    color: isActive ? '#ffffff' : isLocked ? 'var(--text-dim)' : 'var(--text-muted)',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
-                    opacity: isLocked ? 0.65 : 1,
+                    opacity: isLocked ? 0.6 : 1,
                     transition: 'all 0.2s cubic-bezier(0.2, 0, 0, 1)'
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive && !isLocked) {
-                      e.currentTarget.style.background = 'var(--md-surface-container)';
-                      e.currentTarget.style.color = 'var(--text-main)';
+                      e.currentTarget.style.background = 'rgba(241, 245, 249, 0.9)';
+                      e.currentTarget.style.color = '#0f172a';
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -99,14 +101,23 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                     }
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <Icon size={20} color={isActive ? '#041e49' : isLocked ? '#9aa0a6' : '#5f6368'} />
-                    <span style={{ fontSize: '0.9rem', fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <Icon size={18} color={isActive ? '#ffffff' : isLocked ? '#94a3b8' : '#64748b'} />
+                    <span style={{ fontSize: '0.88rem', fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
                   </div>
                   {item.badge ? (
-                    <span className="badge badge-info" style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: '12px' }}>{item.badge}</span>
+                    <span style={{ 
+                      fontSize: '0.68rem', 
+                      padding: '2px 8px', 
+                      borderRadius: '12px',
+                      background: 'rgba(241, 245, 249, 0.9)',
+                      color: 'var(--text-dim)',
+                      fontWeight: 600
+                    }}>
+                      {item.badge}
+                    </span>
                   ) : isActive ? (
-                    <ChevronRight size={16} color="#041e49" />
+                    <ChevronRight size={15} color="#ffffff" />
                   ) : null}
                 </button>
               );
@@ -115,14 +126,14 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* User Info & Logout (MD3 Elevated Pill Card) */}
+      {/* User Info & Logout */}
       <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 14px',
-          background: 'var(--md-surface-container)',
+          background: 'rgba(241, 245, 249, 0.75)',
           borderRadius: '16px',
           border: '1px solid var(--border-color)'
         }}>
@@ -131,42 +142,45 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
               width: '34px',
               height: '34px',
               borderRadius: '50%',
-              background: '#0b57d0',
+              background: '#1e293b',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
-              fontSize: '0.85rem'
+              fontSize: '0.82rem'
             }}>
-              {user?.username?.[0]?.toUpperCase() || 'A'}
+              {user?.username?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div>
-              <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{user?.first_name || user?.username || 'Fleet Manager'}</p>
-              <span className="badge badge-success" style={{ fontSize: '0.65rem', marginTop: '2px', padding: '2px 6px' }}>
-                {user?.role_display || 'Admin'}
-              </span>
+              <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', margin: 0 }}>
+                {user?.username || 'Operator'}
+              </p>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', margin: 0, textTransform: 'capitalize' }}>
+                {user?.role ? user.role.toLowerCase() : 'Operations'}
+              </p>
             </div>
           </div>
+
           <button
             onClick={logout}
-            title="Logout"
             style={{
-              background: '#ffffff',
-              border: '1px solid var(--border-color)',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              color: '#c5221f',
+              background: 'none',
+              border: 'none',
               cursor: 'pointer',
+              color: 'var(--text-dim)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--elevation-1)',
-              transition: 'background 0.2s ease'
+              padding: '6px',
+              borderRadius: '8px',
+              transition: 'color 0.2s ease'
             }}
+            title="Log Out"
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-danger)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-dim)'}
           >
-            <LogOut size={15} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>

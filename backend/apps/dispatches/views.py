@@ -57,8 +57,8 @@ class DispatchBookingViewSet(viewsets.ModelViewSet):
             'total_revenue_inr': total_revenue
         })
 
-    @action(detail=True, methods=['post'])
-    def dispatch(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path='dispatch')
+    def allocate_dispatch(self, request, pk=None):
         """Allocate driver and vehicle and change status to DISPATCHED."""
         booking = self.get_object()
         vehicle_id = request.data.get('vehicle_id')
