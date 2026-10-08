@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'apps.fleet',
     'apps.drivers',
     'apps.dispatches',
+    'apps.billing',
+    'apps.telematics',
 ]
 
 MIDDLEWARE = [

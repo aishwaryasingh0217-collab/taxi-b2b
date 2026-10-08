@@ -65,7 +65,7 @@ const PRESET_PHOTO_PACKS = {
   }
 };
 
-const VehicleManagement = () => {
+const VehicleManagement = ({ setActiveTab }) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -970,6 +970,17 @@ const VehicleManagement = () => {
               <span>Table View</span>
             </button>
           </div>
+
+          {setActiveTab && (
+            <button 
+              onClick={() => setActiveTab('telematics')} 
+              className="btn-secondary" 
+              style={{ padding: '10px 18px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}
+            >
+              <Navigation size={16} color="#2563eb" />
+              <span>Live GPS Map</span>
+            </button>
+          )}
 
           <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ padding: '10px 22px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}>
             <Plus size={16} />

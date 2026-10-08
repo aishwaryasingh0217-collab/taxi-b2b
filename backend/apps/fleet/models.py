@@ -5,6 +5,7 @@ class Vehicle(models.Model):
     class VehicleClass(models.TextChoices):
         SEDAN = 'SEDAN', 'Executive Sedan'
         SUV = 'SUV', 'Premium SUV'
+        PREMIUM_MPV = 'PREMIUM_MPV', 'Premium MPV / Innova'
         EV = 'EV', 'Electric Vehicle'
         VAN = 'VAN', 'Multi-Passenger Van'
         LUXURY = 'LUXURY', 'Luxury Class'
@@ -14,6 +15,7 @@ class Vehicle(models.Model):
         DIESEL = 'DIESEL', 'Diesel'
         CNG = 'CNG', 'CNG'
         ELECTRIC = 'ELECTRIC', 'Electric (EV)'
+        HYBRID = 'HYBRID', 'Strong Hybrid'
 
     class VehicleStatus(models.TextChoices):
         AVAILABLE = 'AVAILABLE', 'Available for Assignment'

@@ -34,7 +34,7 @@ class DispatchBooking(models.Model):
         COMPLETED = 'COMPLETED', 'Completed & Invoiced'
         CANCELLED = 'CANCELLED', 'Cancelled'
 
-    booking_reference = models.CharField(max_length=40, unique=True, help_text="e.g. DISP-2026-1001")
+    booking_reference = models.CharField(max_length=40, unique=True, blank=True, help_text="e.g. DISP-2026-1001")
     client = models.ForeignKey(CorporateClient, on_delete=models.CASCADE, related_name='bookings')
     booking_type = models.CharField(max_length=30, choices=BookingType.choices, default=BookingType.AIRPORT_TRANSFER)
     vehicle_class_requested = models.CharField(max_length=20, choices=Vehicle.VehicleClass.choices, default=Vehicle.VehicleClass.SEDAN)
@@ -57,6 +57,8 @@ class DispatchBooking(models.Model):
 
     # Operational Status
     status = models.CharField(max_length=25, choices=DispatchStatus.choices, default=DispatchStatus.PENDING)
+    cancelled_by = models.CharField(max_length=50, blank=True, null=True, help_text="User or role who cancelled the dispatch")
+    cancellation_reason = models.TextField(blank=True, null=True, help_text="Reason for trip cancellation")
     
     # Odometer & Metered Trip Details
     start_odometer = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

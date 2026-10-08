@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import CorporateClient, DispatchBooking
-from apps.fleet.serializers import VehicleSerializer
 
 class CorporateClientSerializer(serializers.ModelSerializer):
     active_bookings_count = serializers.SerializerMethodField()
@@ -26,6 +25,9 @@ class DispatchBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = DispatchBooking
         fields = '__all__'
+        extra_kwargs = {
+            'booking_reference': {'required': False, 'allow_blank': True}
+        }
 
     def get_assigned_vehicle_detail(self, obj):
         if obj.assigned_vehicle:

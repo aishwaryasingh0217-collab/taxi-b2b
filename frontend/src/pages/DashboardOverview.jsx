@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Car, Users, CheckCircle2, AlertTriangle, ShieldCheck, Activity, Wrench, ArrowUpRight } from 'lucide-react';
+import { Car, Users, CheckCircle2, AlertTriangle, ShieldCheck, Activity, Wrench, ArrowUpRight, Navigation } from 'lucide-react';
 
 const DashboardOverview = ({ setActiveTab }) => {
   const [vehicleSummary, setVehicleSummary] = useState({ total_vehicles: 0, available: 0, on_duty: 0, in_maintenance: 0 });
@@ -56,8 +56,12 @@ const DashboardOverview = ({ setActiveTab }) => {
             Active duty assignments, driver safety scores, and real-time compliance monitoring across Metro Fleet.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '14px' }}>
-          <button onClick={() => setActiveTab('vehicles')} className="btn-primary" style={{ padding: '11px 22px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button onClick={() => setActiveTab('telematics')} className="btn-primary" style={{ padding: '11px 22px', background: '#0f172a', gap: '8px' }}>
+            <Navigation size={18} color="#38bdf8" />
+            <span>Live GPS Map</span>
+          </button>
+          <button onClick={() => setActiveTab('vehicles')} className="btn-secondary" style={{ padding: '11px 22px' }}>
             <Car size={18} />
             <span>Manage Vehicles</span>
           </button>
@@ -170,23 +174,49 @@ const DashboardOverview = ({ setActiveTab }) => {
               </p>
             </div>
 
-            <div style={{ padding: '18px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span className="badge badge-warning">Phase 3 Planned</span>
-                <strong style={{ color: 'var(--text-main)', fontSize: '0.92rem' }}>Corporate Billing Engine</strong>
+            <div 
+              onClick={() => setActiveTab && setActiveTab('settlements')}
+              style={{ 
+                padding: '18px', 
+                background: 'rgba(255, 255, 255, 0.88)', 
+                borderRadius: '12px', 
+                border: '1px solid var(--border-color)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="badge badge-success" style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}>Phase 3 Live</span>
+                  <strong style={{ color: 'var(--text-main)', fontSize: '0.92rem' }}>Corporate Billing Engine</strong>
+                </div>
+                <ArrowUpRight size={16} color="#64748b" />
               </div>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                Contract pricing cards, corporate retainer billing, toll reimbursements & driver payouts.
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.4', margin: 0 }}>
+                Contract pricing cards, corporate retainer billing, toll reimbursements & driver settlements.
               </p>
             </div>
 
-            <div style={{ padding: '18px', background: 'var(--md-surface-container-low)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span className="badge badge-warning">Phase 4 Planned</span>
-                <strong style={{ color: 'var(--text-main)', fontSize: '0.92rem' }}>Live Telematics & Redis</strong>
+            <div 
+              onClick={() => setActiveTab && setActiveTab('telematics')}
+              style={{ 
+                padding: '18px', 
+                background: 'rgba(255, 255, 255, 0.88)', 
+                borderRadius: '12px', 
+                border: '1px solid var(--border-color)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="badge badge-success" style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}>Phase 4 Live</span>
+                  <strong style={{ color: 'var(--text-main)', fontSize: '0.92rem' }}>Live GPS Map & Telematics</strong>
+                </div>
+                <ArrowUpRight size={16} color="#64748b" />
               </div>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                Real-time GPS ingestion, geofence alerts, speed monitoring & live operational map.
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.4', margin: 0 }}>
+                Real-time GPS tracking, active geofence alerts, speed governor monitoring & live operational radar.
               </p>
             </div>
           </div>

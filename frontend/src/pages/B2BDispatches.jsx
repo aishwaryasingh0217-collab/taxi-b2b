@@ -6,8 +6,13 @@ import {
   CheckCircle2, AlertCircle, Plus, Search, Filter, Phone, 
   ArrowRight, DollarSign, Shield, Zap, ChevronRight, X, Play, 
   Check, RefreshCw, Plane, UserCheck, Receipt, Building2, 
-  Printer, AlertTriangle, FileText, CheckCircle
+  Printer, AlertTriangle, FileText, CheckCircle, Sparkles, Crown, LayoutGrid
 } from 'lucide-react';
+import AIMatchmakerModal from '../components/dispatches/AIMatchmakerModal';
+import FlightRadarDesk from '../components/dispatches/FlightRadarDesk';
+import VIPPlacardModal from '../components/dispatches/VIPPlacardModal';
+import HotSwapReassignModal from '../components/dispatches/HotSwapReassignModal';
+import DispatchKanbanBoard from '../components/dispatches/DispatchKanbanBoard';
 
 const B2BDispatches = () => {
   const [bookings, setBookings] = useState([]);
@@ -23,7 +28,7 @@ const B2BDispatches = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Active Tab: 'needs_driver' | 'active' | 'completed' | 'all'
+  // Active Tab: 'needs_driver' | 'active' | 'completed' | 'all' | 'kanban' | 'flight_radar'
   const [activeTab, setActiveTab] = useState('needs_driver');
 
   // Search & Filter
@@ -35,8 +40,12 @@ const B2BDispatches = () => {
   const [showAllocateModal, setShowAllocateModal] = useState(false);
   const [showTripControlModal, setShowTripControlModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showMatchmakerModal, setShowMatchmakerModal] = useState(false);
+  const [showPlacardModal, setShowPlacardModal] = useState(false);
+  const [showReassignModal, setShowReassignModal] = useState(false);
+  const [batchAutoAssigning, setBatchAutoAssigning] = useState(false);
   
-  // Selected booking for allocation, trip control, or invoice preview
+  // Selected booking for allocation, trip control, invoice, matchmaker, or placard preview
   const [selectedBooking, setSelectedBooking] = useState(null);
   
   // Allocation form state
@@ -106,6 +115,44 @@ const B2BDispatches = () => {
     setSelectedDriverId(onDutyDrivers[0]?.id || drivers[0]?.id || '');
     
     setShowAllocateModal(true);
+  };
+
+  const handleOpenMatchmaker = (booking) => {
+    setSelectedBooking(booking);
+    setShowMatchmakerModal(true);
+  };
+
+  const handleOpenPlacard = (booking) => {
+    setSelectedBooking(booking);
+    setShowPlacardModal(true);
+  };
+
+  const handleOpenReassign = (booking) => {
+    setSelectedBooking(booking);
+    setShowReassignModal(true);
+  };
+
+  const handle1ClickAutoAssign = async (booking) => {
+    try {
+      await api.post(`dispatches/bookings/${booking.id}/auto_assign/`);
+      fetchDispatchesData();
+    } catch (err) {
+      alert('Error in auto-assign: ' + (err.response?.data?.error || err.message));
+    }
+  };
+
+  const handleBatchAutoAssign = async () => {
+    if (!window.confirm(`Run Smart Auto-Dispatch on all pending corporate bookings?`)) return;
+    setBatchAutoAssigning(true);
+    try {
+      const res = await api.post('dispatches/bookings/batch_auto_assign/');
+      alert(res.data.message || 'Batch allocation complete!');
+      fetchDispatchesData();
+    } catch (err) {
+      alert('Error running batch auto-assign: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setBatchAutoAssigning(false);
+    }
   };
 
   // Submit Driver + Vehicle Allocation
@@ -291,20 +338,35 @@ const B2BDispatches = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            setBookingFormData({
-              ...initialBookingForm,
-              client: clients[0]?.id || ''
-            });
-            setShowCreateModal(true);
-          }}
-          className="btn-primary"
-          style={{ padding: '11px 22px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}
-        >
-          <Plus size={16} />
-          <span>New Trip Booking</span>
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {pendingCount > 0 && (
+            <button
+              onClick={handleBatchAutoAssign}
+              disabled={batchAutoAssigning}
+              className="btn-secondary"
+              style={{ padding: '11px 20px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px', background: 'rgba(37, 99, 235, 0.08)', borderColor: '#93c5fd', color: '#1d4ed8', fontWeight: 700 }}
+              title="Automatically match best car and chauffeur for all pending bookings"
+            >
+              <Zap size={16} color="#2563eb" className={batchAutoAssigning ? 'spin' : ''} />
+              <span>{batchAutoAssigning ? 'Auto-Assigning...' : `⚡ Auto-Assign All (${pendingCount})`}</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              setBookingFormData({
+                ...initialBookingForm,
+                client: clients[0]?.id || ''
+              });
+              setShowCreateModal(true);
+            }}
+            className="btn-primary"
+            style={{ padding: '11px 22px', borderRadius: '24px', fontSize: '0.88rem', gap: '8px' }}
+          >
+            <Plus size={16} />
+            <span>New Trip Booking</span>
+          </button>
+        </div>
       </div>
 
       {/* 4 Frosted Glass Metric Tiles */}
@@ -540,6 +602,48 @@ const B2BDispatches = () => {
               {allCount}
             </span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('kanban')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '24px',
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'kanban' ? 600 : 500,
+              cursor: 'pointer',
+              border: 'none',
+              background: activeTab === 'kanban' ? '#1e293b' : 'transparent',
+              color: activeTab === 'kanban' ? '#ffffff' : '#475569',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <LayoutGrid size={15} />
+            <span>Duty Pipeline (Kanban)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('flight_radar')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '24px',
+              fontSize: '0.85rem',
+              fontWeight: activeTab === 'flight_radar' ? 600 : 500,
+              cursor: 'pointer',
+              border: 'none',
+              background: activeTab === 'flight_radar' ? '#0284c7' : 'transparent',
+              color: activeTab === 'flight_radar' ? '#ffffff' : '#475569',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Plane size={15} />
+            <span>Goa Flight Radar</span>
+          </button>
         </div>
 
         {/* Filter & Search Bar */}
@@ -582,8 +686,22 @@ const B2BDispatches = () => {
         </div>
       </div>
 
-      {/* Main Content: Frosted Glass Trip Ticket Cards */}
-      {loading ? (
+      {/* Main Content: Dispatcher Views */}
+      {activeTab === 'kanban' ? (
+        <DispatchKanbanBoard
+          bookings={bookings}
+          onOpenMatchmaker={handleOpenMatchmaker}
+          onOpenAllocate={handleOpenAllocateModal}
+          onOpenTripControl={handleOpenTripControl}
+          onOpenInvoice={handleOpenInvoiceModal}
+          onOpenPlacard={handleOpenPlacard}
+          onOpenReassign={handleOpenReassign}
+          onStartTrip={handleStartTrip}
+          onAutoAssign={handle1ClickAutoAssign}
+        />
+      ) : activeTab === 'flight_radar' ? (
+        <FlightRadarDesk />
+      ) : loading ? (
         <div className="glass-card" style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
           <RefreshCw size={24} className="animate-pulse" style={{ margin: '0 auto 12px auto' }} />
           Loading trip assignments...
@@ -884,18 +1002,36 @@ const B2BDispatches = () => {
                   {b.status === 'PENDING' && (
                     <>
                       <button
-                        onClick={() => handleOpenAllocateModal(b)}
+                        onClick={() => handleOpenMatchmaker(b)}
                         className="btn-primary"
-                        style={{ padding: '8px 18px', fontSize: '0.85rem', borderRadius: '20px', gap: '6px' }}
+                        style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '20px', gap: '6px', background: '#0284c7', borderColor: '#0284c7' }}
                       >
-                        <UserCheck size={15} />
-                        <span>Assign Car & Chauffeur</span>
+                        <Sparkles size={15} />
+                        <span>AI Matchmaker</span>
+                      </button>
+
+                      <button
+                        onClick={() => handle1ClickAutoAssign(b)}
+                        className="btn-secondary"
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px', gap: '6px' }}
+                        title="1-Click Auto Assign Top Match"
+                      >
+                        <Zap size={14} color="#0284c7" />
+                        <span>Auto</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenAllocateModal(b)}
+                        className="btn-secondary"
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
+                      >
+                        Manual Assign
                       </button>
 
                       <button
                         onClick={() => handleCancelBooking(b.id)}
                         className="btn-secondary"
-                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
+                        style={{ padding: '8px 12px', fontSize: '0.82rem', borderRadius: '20px' }}
                       >
                         Cancel
                       </button>
@@ -919,12 +1055,26 @@ const B2BDispatches = () => {
                         <span>Passenger Picked Up</span>
                       </button>
 
+                      {b.flight_number && (
+                        <button
+                          onClick={() => handleOpenPlacard(b)}
+                          className="btn-secondary"
+                          style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px', gap: '6px', background: '#fffbeb', borderColor: '#fde68a', color: '#92400e' }}
+                          title="VIP Airport Arrival Placard (Tablet Display)"
+                        >
+                          <Crown size={14} color="#d97706" />
+                          <span>VIP Placard</span>
+                        </button>
+                      )}
+
                       <button
-                        onClick={() => handleOpenAllocateModal(b)}
+                        onClick={() => handleOpenReassign(b)}
                         className="btn-secondary"
-                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px' }}
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', borderRadius: '20px', gap: '6px' }}
+                        title="Dispatcher Hot-Swap"
                       >
-                        Change Chauffeur
+                        <RefreshCw size={13} />
+                        <span>Hot-Swap</span>
                       </button>
                     </>
                   )}
@@ -1625,6 +1775,30 @@ const B2BDispatches = () => {
         </div>,
         document.body
       )}
+      {/* AI Matchmaker Modal */}
+      <AIMatchmakerModal
+        booking={selectedBooking}
+        isOpen={showMatchmakerModal}
+        onClose={() => setShowMatchmakerModal(false)}
+        onSuccess={fetchDispatchesData}
+      />
+
+      {/* VIP Airport Placard Modal */}
+      <VIPPlacardModal
+        booking={selectedBooking}
+        isOpen={showPlacardModal}
+        onClose={() => setShowPlacardModal(false)}
+      />
+
+      {/* Hot-Swap Reassign Modal */}
+      <HotSwapReassignModal
+        booking={selectedBooking}
+        vehicles={vehicles}
+        drivers={drivers}
+        isOpen={showReassignModal}
+        onClose={() => setShowReassignModal(false)}
+        onSuccess={fetchDispatchesData}
+      />
 
     </div>
   );

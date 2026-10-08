@@ -222,14 +222,14 @@ const Login = ({ onBackToWebsite }) => {
               Fleet Admin
             </button>
             <button
-              onClick={() => handleQuickLogin('dispatcher1', 'pass123')}
+              onClick={() => handleQuickLogin('dispatcher1', 'admin123')}
               className="btn-secondary"
               style={{ fontSize: '0.78rem', padding: '7px 14px', borderRadius: '16px' }}
             >
               Dispatcher
             </button>
             <button
-              onClick={() => handleQuickLogin('driver_john', 'pass123')}
+              onClick={() => handleQuickLogin('driver_john', 'admin123')}
               className="btn-secondary"
               style={{ fontSize: '0.78rem', padding: '7px 14px', borderRadius: '16px' }}
             >
